@@ -1,0 +1,77 @@
+/*classDiagram
+  class ArrayIdManager {
+    -arreglo: array
+    +getArreglo(): array
+    +agregar(elemento: Elemento): void
+    +existeId(id: int): bool
+    +eliminarPorId(id: int): void
+    +getPorId(id: int): Elemento or null
+    +modificar(elementoModificado: Elemento): void
+    +mostrar(): void (abstract)
+  }
+
+  class Cliente {
+    -nombre: string
+    -dni: string
+    -id: int
+    -telefono: string
+    -direccion: string
+    +__construct(nombre: string, dni: string, telefono: string, direccion: string): void
+    +getNombre(): string
+    +getDni(): string
+    +getId(): int
+  }
+
+  class Mascota {
+    -nombre: string
+    -raza: string
+    -edad: int
+    -historialMedico: string
+    -id: int
+    -clienteId: int
+    +__construct(nombre: string, raza: string, edad: int, historialMedico: string): void
+    +getNombre(): string
+    +getId(): int
+  }
+
+  class Veterinario {
+    -nombre: string
+    -especialidad: string
+    -id: int
+    +__construct(nombre: string, especialidad: string): void
+  }
+
+  class ClienteManager {
+      +alta(): void
+      +baja(): void
+      +modificar(): void
+      +mostrar(): void 
+  }
+
+  class MascotaManager {
+      +alta(): void
+      +baja(): void
+      +modificar(): void 
+      +mostrar(): void 
+  }
+
+  class VeterinarioManager {
+      +alta(): void 
+      +baja(): void 
+      +modificar(): void 
+      +mostrar(): void 
+  }
+
+  interface ABMinterface {
+      +levantar()
+      +alta()
+      +baja()
+      +modificacion()
+  }
+
+  ArrayIdManager <|-- ClienteManager 
+  ArrayIdManager <|-- MascotaManager 
+  ArrayIdManager <|-- VeterinarioManager 
+
+  Cliente --|> Mascota // Relación de asociación (un cliente puede tener varias mascotas)
+  */
