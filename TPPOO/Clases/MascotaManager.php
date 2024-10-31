@@ -8,7 +8,6 @@ class MascotaManager extends arrayIdManager{
 
     public function __construct(Cliente $cliente) {
         $this->cliente = $cliente;
-        // Aca deberia ? cargar las mascotas asociadas al cliente desde la base de datos
         $this->levantar();
     }
 
@@ -21,14 +20,12 @@ class MascotaManager extends arrayIdManager{
         $mascotas = $stmt->fetchAll(PDO::FETCH_OBJ);
 
         foreach ($mascotas as $mascota) {
-            // Crea el objeto Mascota
             $nuevaMascota = new Mascota(
                 $mascota->nombre,
                 $mascota->edad,
                 $mascota->raza,
                 $mascota->historialMedico
             );
-            // Asignar ID
             $nuevaMascota->setId($mascota->id);
             // Agregar al arreglo
             $this->agregar($nuevaMascota);
@@ -47,7 +44,7 @@ class MascotaManager extends arrayIdManager{
             foreach ($this->cliente->getReferenciaAnimal() as $mascota) {
                 if ($mascota->getNombre() === $nombreMascota) {
                     echo "Ya existe una mascota con ese nombre para este cliente." . PHP_EOL;
-                    return false; // Salir si ya existe
+                    return false; 
                 }
             }
         
@@ -69,10 +66,10 @@ class MascotaManager extends arrayIdManager{
         $mascota = new Mascota($nombreMascota, $edad, $raza, $historialMedico);
     
         // Asigna el ID del cliente actual a la mascota (si es necesario)
-        $mascota->setClienteId($this->cliente->getId()); // clase Mascota tiene este método
+        $mascota->setClienteId($this->cliente->getId());
 
        // Inserta en la base de datos
-       if ($mascota->guardar()) { // Asegúrate de que el método save() esté implementado en Mascota
+       if ($mascota->guardar()) { 
           // Agrega la mascota al arreglo
           $this->agregar($mascota);
           echo "La mascota se ha creado con éxito." . PHP_EOL;
@@ -102,7 +99,7 @@ class MascotaManager extends arrayIdManager{
                     if ($nombre != ""){
                         $mascotaModificado->setNombre($nombre);
                     }
-                       // Modificar edad
+                       
                     $edad = Menu::readln("Ingrese la nueva edad de la mascota (deje en blanco para no modificar): ");
                     if ($edad != "") {
                        $mascotaModificado->setEdad($edad);
@@ -149,7 +146,7 @@ class MascotaManager extends arrayIdManager{
             // Llamar al método borrar() de la clase Mascota para eliminarla de la base de datos
             if ($mascota->borrar()) {
                 // Eliminar la mascota del arreglo gestionado por MascotaManager
-                $this->eliminarPorId($id); // Asegúrate de que este método esté implementado
+                $this->eliminarPorId($id); 
                 echo "La mascota ha sido eliminada con éxito." . PHP_EOL;
             } else {
                 echo "Hubo un error al intentar eliminar la mascota." . PHP_EOL;
