@@ -1,13 +1,13 @@
 <?php
-     class Mascota { //deberia estar asociado a su dueno = cliente
+     class Mascota { 
         private $nombre;
-        private $edad; // podria poner fecha de nacimiento, pero en termino de animales parece innecesario
+        private $edad;
         private $raza;
         private $id;
         private $historialMedico;
         private $clienteId;
 
-        public function __construct($nombre,$edad, $raza, $id, $historialMedico, $clienteId){
+        public function __construct($nombre, $edad, $raza, $id, $historialMedico, $clienteId){
             $this->nombre=$nombre;
             $this->edad=$edad;
             $this->raza=$raza;
@@ -61,8 +61,9 @@
             $this->historialMedico = $historialMedico;
         }
 
+        //Almacena Id del dueño
         public function setClienteId($clienteId) {
-            $this->clienteId = $clienteId; // Para almacenar el ID del dueño
+            $this->clienteId = $clienteId; 
         }
 
 
@@ -121,7 +122,7 @@
               } catch (PDOException $e) {
               echo "Error al borrar la mascota: " . htmlspecialchars($e->getMessage());
             } 
-              return false; // Indica fallo
+              return false;
           }
   
   
