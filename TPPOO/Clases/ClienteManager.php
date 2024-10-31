@@ -22,8 +22,6 @@ class ClienteManager extends arrayIdManager{
             $nuevoCliente = new Cliente(
                 $cliente->nombre,
                 $cliente->dni,
-                $cliente->telefono, // Asegúrate de usar el campo correcto
-                $cliente->direccion // Si tu clase Cliente tiene este parámetro
             );
     
             // Asignar el ID de la base de datos al objeto Cliente
@@ -44,10 +42,9 @@ class ClienteManager extends arrayIdManager{
     public function alta() {
         $nombre = Menu::readln("Ingrese su nombre y apellido: ");
         $dni = Menu::readln("Ingrese su dni: ");
-        $telefono =  Menu::readln("Ingrese su telefono: ");
 
         //Crea el nuevo objeto cliente
-        $cliente = new Cliente($nombre,$dni,$telefono);
+        $cliente = new Cliente($nombre,$dni);
 
         //Lo inserta en la base de datos
         $cliente->guardar();
@@ -59,12 +56,12 @@ class ClienteManager extends arrayIdManager{
         $agregarMascota = Menu::readln("¿Desea agregar una mascota? (si/no): ");
           if (strtolower($agregarMascota) === 'si') {
             $nombreMascota = Menu::readln("Ingrese el nombre de la mascota: ");
-            $raza = Menu::readln("Ingrese la raza de la mascota: ");
             $edad = Menu::readln("Ingrese la edad de la mascota: ");
+            $raza = Menu::readln("Ingrese la raza de la mascota: ");
             $historialMedico = Menu::readln("Ingrese el historial médico de la mascota: ");
 
         // Crea el nuevo objeto Mascota
-        $mascota = new Mascota($nombreMascota, $raza, $edad, $historialMedico);
+        $mascota = new Mascota($nombreMascota, $edad, $raza, $historialMedico);
         
         // Agrega la mascota al cliente
         $cliente->agregarMascota($mascota);
@@ -114,11 +111,6 @@ class ClienteManager extends arrayIdManager{
                 $dni = Menu::readln("Ingrese el dni: ");
                 if ($dni != ""){
                     $clienteModificado->setDni($dni);
-                }
-                   // Modificar dirección
-                $direccion = Menu::readln("Ingrese la dirección: ");
-                if ($direccion != "") {
-                   $clienteModificado->setDireccion($direccion);
                 }
 
             //Lo modifica en la Base de Datos
