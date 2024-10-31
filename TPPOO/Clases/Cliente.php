@@ -2,13 +2,13 @@
     class Cliente {
         private $nombre;
         private $dni;
-        private $id; // se usaria solo despues de guardar
-        private $referenciaAnimal; // seria un array para almacenar la o las mascotas
+        private $id; 
+        private $referenciaAnimal; 
 
         public function __construct($nombre,$dni, $id = null, $referenciaAnimal=[]){
             $this->nombre=$nombre;
             $this->dni=$dni;
-            $this->id=$id; // o sea, se asigna solo si se proporciona
+            $this->id=$id; //se asigna solo si se proporciona
             $this->referenciaAnimal=[];
         }
 
@@ -89,7 +89,7 @@
 
             //Guardar mascota asociada a cliente
             foreach ($this->referenciaAnimal as $mascota) {
-                $mascota->setClienteId($this->getId()); // Asegúrate de que Mascota tenga este método
+                $mascota->setClienteId($this->getId()); 
                 $mascota->guardar(); // Guarda cada mascota en la base de datos
             }
             return true; 
@@ -154,4 +154,5 @@
             echo "Error al modificar cliente: " . $e->getMessage();
             }
         } 
+    }
     }
