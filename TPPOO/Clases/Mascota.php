@@ -11,7 +11,7 @@
             $this->nombre=$nombre;
             $this->edad=$edad;
             $this->raza=$raza;
-            $this->id=$id;
+            $this->id= uniqid('Mascota_', true);
             $this->historialMedico=$historialMedico;
             $this->clienteId=$clienteId;
         }
@@ -69,7 +69,7 @@
 
         // Método para mostrar información de la mascota
         public function mostrar() {
-        echo "Nombre: " . htmlspecialchars($this->getNombre()) 
+         echo "Nombre: " . htmlspecialchars($this->getNombre()) 
             . ", Edad: " . htmlspecialchars($this->getEdad()) 
             . ", Raza: " . htmlspecialchars($this->getRaza()) 
             . ", Id: " . htmlspecialchars($this->getId()) 
@@ -84,6 +84,7 @@
                       VALUES (:nombre, :edad, :raza, :id, :historial_medico, :clienteId)";
                       
               $stmt = Conexion::prepare($sql);
+
               $stmt->bindParam(':nombre', $this->nombre);
               $stmt->bindParam(':edad', $this->edad);
               $stmt->bindParam(':raza', $this->raza);
@@ -93,7 +94,7 @@
             
               if ($stmt->execute()) {
                 // Asignar id si es necesario
-                  $this->setId(Conexion::getId());
+                  $this->setId(Conexion::getLastId());
                   return true;
               }
             } catch (PDOException $e) {
@@ -102,8 +103,8 @@
             return false;
         }
   
-           // Borra el mascota de la base de datos
-          public function borrar() {
+        // Borra el mascota de la base de datos
+        public function borrar() {
             try {
               //prepara la consulta SQL
               $sql = "DELETE FROM Mascota WHERE id = :id";
@@ -115,48 +116,48 @@
               if ($stmt->execute()) {
                   echo "Mascota borrada exitosamente.";
                   return true; 
-              } else {
+                } else {
                   echo "No se pudo borrar la mascota.";
                   return false; 
-              }
-              } catch (PDOException $e) {
-              echo "Error al borrar la mascota: " . htmlspecialchars($e->getMessage());
-            } 
-              return false;
-          }
+                }
+            } catch (PDOException $e) {
+                 echo "Error al borrar la mascota: " . htmlspecialchars($e->getMessage());
+                } 
+            return false;
+        }
   
   
            // Modifica la mascota en la base de datos
-          public function modificar() {
+        public function modificar() {
             try {  
-              //prepara la consulta SQL
-              $sql = "UPDATE Mascota SET nombre = :nombre,
+                //prepara la consulta SQL
+                $sql = "UPDATE Mascota SET nombre = :nombre,
                       edad = :edad,
                       raza = :raza,
-                      historial_medico = :historial_medico
+                      historialMedico = :historialMedico
                       WHERE id = :id";
   
-              //prepara la declaracion
-              $stmt = Conexion::prepare($sql);
+                //prepara la declaracion
+                 $stmt = Conexion::prepare($sql);
               
-              // Asocia parámetros
-            $stmt->bindParam(':nombre', $this->nombre);
-            $stmt->bindParam(':edad', $this->edad);
-            $stmt->bindParam(':raza', $this->raza);
-            $stmt->bindParam(':id', $this->id);
-            $stmt->bindParam(':historial_medico', $this->historialMedico);
+                 // Asocia parámetros
+                 $stmt->bindParam(':nombre', $this->nombre);
+                 $stmt->bindParam(':edad', $this->edad);
+                 $stmt->bindParam(':raza', $this->raza);
+                 $stmt->bindParam(':id', $this->id);
+                 $stmt->bindParam(':historialMedico', $this->historialMedico);
 
-              if ($stmt->execute()) { 
-                  echo "Mascota modificada exitosamente."; 
-                  return true; 
-              } else { 
-                  echo "No se pudo modificar la mascota."; 
-                  return false; 
-              }
+                 if ($stmt->execute()) { 
+                     echo "Mascota modificada exitosamente."; 
+                     return true; 
+                    } else { 
+                      echo "No se pudo modificar la mascota."; 
+                     return false; 
+                    }
   
-               } catch (PDOException $e) {
-              echo "Error al modificar la mascota: " . $e->getMessage();
-              }
-          } 
+                } catch (PDOException $e) {
+                 echo "Error al modificar la mascota: " . $e->getMessage();
+                }
+        } 
 
     }

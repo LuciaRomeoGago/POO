@@ -13,8 +13,8 @@ class ClienteManager extends arrayIdManager{
         
         // Verificar si se obtuvieron resultados
         if ($clientes === false || empty($clientes)) {
-        echo "No se encontraron clientes en la base de datos." . PHP_EOL;
-        return; // Salir del método si no hay clientes
+         echo "No se encontraron clientes en la base de datos." . PHP_EOL;
+         return; // Salir del método si no hay clientes
         }
 
         foreach ($clientes as $cliente){
@@ -55,22 +55,22 @@ class ClienteManager extends arrayIdManager{
         // Preguntar si desea agregar una mascota
         $agregarMascota = Menu::readln("¿Desea agregar una mascota? (si/no): ");
           if (strtolower($agregarMascota) === 'si') {
-            $nombreMascota = Menu::readln("Ingrese el nombre de la mascota: ");
-            $edad = Menu::readln("Ingrese la edad de la mascota: ");
-            $raza = Menu::readln("Ingrese la raza de la mascota: ");
-            $historialMedico = Menu::readln("Ingrese el historial médico de la mascota: ");
+             $nombreMascota = Menu::readln("Ingrese el nombre de la mascota: ");
+             $edad = Menu::readln("Ingrese la edad de la mascota: ");
+             $raza = Menu::readln("Ingrese la raza de la mascota: ");
+             $historialMedico = Menu::readln("Ingrese el historial médico de la mascota: ");
 
-        // Crea el nuevo objeto Mascota
-        $mascota = new Mascota($nombreMascota, $edad, $raza, $historialMedico);
+             // Crea el nuevo objeto Mascota
+             $mascota = new Mascota($nombreMascota, $edad, $raza, $historialMedico);
         
-        // Agrega la mascota al cliente
-        $cliente->agregarMascota($mascota);
+             // Agrega la mascota al cliente
+             $cliente->agregarMascota($mascota);
         
-        // Mensaje de confirmación
-        echo "La mascota se ha agregado exitosamente." . PHP_EOL;
-    }
+             // Mensaje de confirmación
+             echo "La mascota se ha agregado exitosamente." . PHP_EOL;
+            }
     
-    echo "El cliente se ha creado con éxito." . PHP_EOL;
+        echo "El cliente se ha creado con éxito." . PHP_EOL;
         $rta = Menu::readln("El cliente se ha creado con éxito");
     }
 

@@ -182,6 +182,9 @@ class MenuAdmin extends Menu {
         
             self::menu($titulo, $opciones);
         }
-    }
 
-      
+           // Método público para mostrar el menú
+        public function mostrarMenu($titulo, $opciones) {
+          $this->menu($titulo, $opciones); // Llama al método protegido
+        }
+    }

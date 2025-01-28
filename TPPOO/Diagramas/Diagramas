@@ -28,7 +28,7 @@
     -edad: int
     -historialMedico: string
     -id: int
-    -clienteId: int
+    -clienteId: int 
     +__construct(nombre: string, raza: string, edad: int, historialMedico: string): void
     +getNombre(): string
     +getId(): int

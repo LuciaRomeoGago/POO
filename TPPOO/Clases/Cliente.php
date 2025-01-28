@@ -8,7 +8,7 @@
         public function __construct($nombre,$dni, $id = null, $referenciaAnimal=[]){
             $this->nombre=$nombre;
             $this->dni=$dni;
-            $this->id=$id; //se asigna solo si se proporciona
+            $this->id=$id ?? uniqid('Cliente_', true);
             $this->referenciaAnimal=[];
         }
 
@@ -46,7 +46,7 @@
 
         //Metodos
 
-         // Agregar una mascota
+        // Agregar una mascota
         public function agregarMascota(Mascota $mascota) {
           $this->referenciaAnimal[] = $mascota; // Agregar la mascota al array
         }
@@ -58,14 +58,14 @@
              return;
             }
         
-             echo "Mascotas del cliente " . htmlspecialchars($this->getNombre()) . ":" . PHP_EOL;
-             foreach ($this->referenciaAnimal as $mascota) {
-                echo "- ";
+            echo "Mascotas del cliente " . htmlspecialchars($this->getNombre()) . ":" . PHP_EOL;
+            foreach ($this->referenciaAnimal as $mascota) {
+             echo "- ";
              $mascota->mostrar(); // Llamar al método mostrar de cada mascota
             }
         }
 
-         //Muestra por pantalla un cliente
+        //Muestra por pantalla un cliente
         public function mostrar(){
         echo "Dni: " . $this->getDni() 
             . ", Nombre: " . $this->getNombre() 
@@ -73,47 +73,45 @@
             $this->mostrarMascotas(); // Llama al método para mostrar las mascotas
         }
 
-         // Guarda en la base de datos
+        // Guarda en la base de datos
         public function guardar() {
           try {
-            $sql = "INSERT INTO Cliente (nombre, dni)
-                    VALUES (:nombre, :dni)";
+             $sql = "INSERT INTO Cliente (nombre, dni, id)
+                    VALUES (:nombre, :dni, :id)";
                     
-            $stmt = Conexion::prepare($sql);
-            $stmt->bindParam(':nombre', $this->nombre);
-            $stmt->bindParam(':dni', $this->dni);
+             $stmt = Conexion::prepare($sql);
+             $stmt->bindParam(':nombre', $this->nombre);
+             $stmt->bindParam(':dni', $this->dni);
+             $stmt->bindParam(':id', $this->id);
             
-            if ($stmt->execute()) {
-                   // Asignar id al cliente
-            $this->setId(Conexion::getLastId()); 
-
-            //Guardar mascota asociada a cliente
-            foreach ($this->referenciaAnimal as $mascota) {
-                $mascota->setClienteId($this->getId()); 
-                $mascota->guardar(); // Guarda cada mascota en la base de datos
-            }
-            return true; 
-            }
+               if ($stmt->execute()) {
+                 foreach ($this->referenciaAnimal as $mascota) {
+                      // Asignar el ID del cliente a la mascota antes de guardarla
+                     $mascota->setClienteId($this->getId()); 
+                     $mascota->guardar(); // Guarda cada mascota en la base de datos
+                    }
+                 return true;
+                }
             } catch (PDOException $e) {
-            echo "Error al guardar cliente: " . $e->getMessage();
-            }
+                 echo "Error al guardar cliente: " . htmlspecialchars($e->getMessage());
+                }
+               return false;
         } 
     
 
-         // Borra el cliente de la base de datos
+        // Borra el cliente de la base de datos
         public function borrar() {
-          try {
-                //primero elimino las mascotas asociadas al cliente
-             $mascotaManager = new MascotaManager($this); // Crea una instancia de MascotaManager para este cliente
+          try { 
+             //Primero elimino las mascotas asociadas al cliente
               foreach ($this->referenciaAnimal as $mascota) {
-               $mascota->borrar(); // Llama al método borrar() de cada mascota
-             }
-               //prepara la consulta SQL
-             $sql = "DELETE FROM Cliente WHERE dni = :dni";
+                 $mascota->borrar(); // Llama al método borrar() de cada mascota
+                }
+             //prepara la consulta SQL
+             $sql = "DELETE FROM Cliente WHERE id = :id";
               //prepara la declaracion
              $stmt = Conexion::prepare($sql);
               //asocia parametros
-             $stmt->bindParam(':dni', $this->dni);
+             $stmt->bindParam(':id', $this->id);
 
               if ($stmt->execute()) {
                  echo "Cliente borrado exitosamente.";
@@ -128,19 +126,19 @@
         }
 
 
-         // Modifica al Cliente en la base de datos
+        // Modifica al Cliente en la base de datos
         public function modificar() {
           try {  
             //prepara la consulta SQL
             $sql = "UPDATE Cliente SET nombre = :nombre
-            WHERE dni = :dni";
+            WHERE id = :id";
 
          // Prepara la declaración
           $stmt = Conexion::prepare($sql);
     
          // Asocia los parámetros
            $stmt->bindParam(':nombre', $this->nombre);
-           $stmt->bindParam(':dni', $this->dni);
+           $stmt->bindParam(':id', $this->id);
 
             if ($stmt->execute()) { 
                 echo "Cliente modificado exitosamente."; 
@@ -153,6 +151,6 @@
              } catch (PDOException $e) {
             echo "Error al modificar cliente: " . $e->getMessage();
             }
+            return false;
         } 
-    }
     }
