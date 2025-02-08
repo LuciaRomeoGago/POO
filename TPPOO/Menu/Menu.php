@@ -1,5 +1,9 @@
 <?php
 require_once('MenuAdministrador.php');
+require_once('Clases' . DIRECTORY_SEPARATOR . 'Cliente.php');
+require_once('Clases' . DIRECTORY_SEPARATOR . 'Mascota.php');
+require_once('Lib' . DIRECTORY_SEPARATOR . 'arrayIdManager.php');
+require_once('Lib' . DIRECTORY_SEPARATOR . 'interface.php');
 
 class Menu {
     
@@ -102,5 +106,33 @@ class Menu {
         $this->pantallaBienvenida("Sistema de Gestión Veterinaria 'Patitas'");
         $menuAdmin = new MenuAdmin();
         $menuAdmin->menuPrincipal(); // Inicia el menú principal del administrador
+    }
+
+    // Main menu display
+    public static function displayMainMenu() {
+        self::writeln("\n--- Menú Principal ---");
+        self::writeln("1. Ingresar como Veterinario");
+        self::writeln("2. Ingresar como Cliente");
+        self::writeln("3. Salir");
+    }
+
+    // Veterinarian menu display
+    public static function displayVeterinarianMenu() {
+        self::writeln("\n--- Menú Veterinario ---");
+        self::writeln("1. Agregar Mascota");
+        self::writeln("2. Modificar Mascota");
+        self::writeln("3. Eliminar Mascota");
+        self::writeln("4. Mostrar Mascotas");
+        self::writeln("5. Volver al Menú Principal");
+    }
+
+    // Client menu display
+    public static function displayClientMenu() {
+        self::writeln("\n--- Menú Cliente ---");
+        self::writeln("1. Crear Cliente");
+        self::writeln("2. Modificar Cliente");
+        self::writeln("3. Eliminar Cliente");
+        self::writeln("4. Mostrar Clientes");
+        self::writeln("5. Volver al Menú Principal");
     }
 }

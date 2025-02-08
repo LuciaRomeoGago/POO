@@ -7,13 +7,13 @@
         private $historialMedico;
         private $clienteId;
 
-        public function __construct($nombre, $edad, $raza, $id, $historialMedico, $clienteId){
+        public function __construct($nombre, $edad, $raza, $historialMedico){
             $this->nombre=$nombre;
             $this->edad=$edad;
             $this->raza=$raza;
             $this->id= uniqid('Mascota_', true);
             $this->historialMedico=$historialMedico;
-            $this->clienteId=$clienteId;
+            $this->clienteId=null;
         }
 
         // Getters
@@ -90,7 +90,7 @@
               $stmt->bindParam(':raza', $this->raza);
               $stmt->bindParam(':id', $this->id);
               $stmt->bindParam(':historial_medico', $this->historialMedico);
-              $stmt->bindParam(':cliente_id', $this->clienteId); // Vincula el ID del dueño
+              $stmt->bindParam(':clienteId', $this->clienteId); // Vincula el ID del dueño
             
               if ($stmt->execute()) {
                 // Asignar id si es necesario

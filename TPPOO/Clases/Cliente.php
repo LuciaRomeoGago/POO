@@ -5,7 +5,7 @@
         private $id; 
         private $referenciaAnimal; 
 
-        public function __construct($nombre,$dni, $id = null, $referenciaAnimal=[]){
+        public function __construct($nombre,$dni, $id = null){
             $this->nombre=$nombre;
             $this->dni=$dni;
             $this->id=$id ?? uniqid('Cliente_', true);
@@ -48,6 +48,7 @@
 
         // Agregar una mascota
         public function agregarMascota(Mascota $mascota) {
+            $mascota->setClienteId($this->getId()); //Establece el clienteId antes de agregar la mascota
           $this->referenciaAnimal[] = $mascota; // Agregar la mascota al array
         }
 

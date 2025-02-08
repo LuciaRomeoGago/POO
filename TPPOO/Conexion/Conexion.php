@@ -4,8 +4,8 @@
         private static $db = null;
             
         //Obtiene los datos de ingresos a la DB de un archivo json local
-        private static function getDatosDb(){
-            $nombreArchivo = 'datos' . DIRECTORY_SEPARATOR . 'base.json';
+       /* private static function getDatosDb(){
+            $nombreArchivo = 'Conexion' . DIRECTORY_SEPARATOR . 'base.json';
             if (is_readable($nombreArchivo)){
                 $datos = file_get_contents($nombreArchivo);
                 $datos = json_decode($datos);
@@ -13,23 +13,32 @@
             }
             return null;
         }
-        
+        */
         private function __construct(){
+                $servidor= 'batyr.db.elephantsql.com';
+                $usuario= 'fklvtlhv';
+                $contrasena= 'fcVvnsbFt7cHt2ShFf5rUg2yJsZwEKOM';
+               // $basededatos= 'fklvtlhv';
+            
+
             try {
                 // Cadena de conexión
-                $datosDb = self::getDatosDb();
-                if(isset($datosDb)){
-                	$dsn = "pgsql:host=$datosDb->host;port=$datosDb->port;dbname=$datosDb->database;user=$datosDb->user;password=$datosDb->password";
+                //$datosDb = self::getDatosDb();
+                /*if(isset($datosDb)){
+                	$dsn = "pgsql=servidor=$datosDb->servidor;base_de_datos=$datosDb->base_de_datos;usuario=$datosDb->usuario;contrasena=$datosDb->contrasena";
                   // Crear una instancia de PDO
          	      self::$db = new PDO($dsn);
         	        // Configurar el modo de error de PDO para manejar excepciones
             	    self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                   // Puedes usar esta conexión para realizar consultas
-                 } else {
+                } else {
                  		echo 'Error de conexión: no se puede acceder al archivo con los datos de acceso a la Base de Datos' . PHP_EOL;
-                 }
+                }
                  
-            } catch (PDOException $e) {
+            }*/  $conn = new PDO($servidor, $usuario, $contrasena);
+                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                 echo "Conexión OK con PDO";
+                } catch (PDOException $e) {
                 // Manejo de errores
                 echo 'Error de conexión: ' . $e->getMessage();
             }

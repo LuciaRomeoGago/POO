@@ -24,9 +24,10 @@ class MascotaManager extends arrayIdManager{
                 $mascota->nombre,
                 $mascota->edad,
                 $mascota->raza,
-                $mascota->historialMedico
-            );
-            $nuevaMascota->setId($mascota->id);
+                $mascota->historialMedico,
+            $mascota->setId($mascota->id),
+            $mascota->clienteId
+        );
             // Agregar al arreglo
             $this->agregar($nuevaMascota);
         }
@@ -63,7 +64,7 @@ class MascotaManager extends arrayIdManager{
         
 
         // Crea el nuevo objeto Mascota
-        $mascota = new Mascota($nombreMascota, $edad, $raza, $historialMedico);
+        $mascota = new Mascota($nombreMascota, $edad, $raza, $historialMedico,$clienteId,$id);
     
         // Asigna el ID del cliente actual a la mascota (si es necesario)
         $mascota->setClienteId($this->cliente->getId());
