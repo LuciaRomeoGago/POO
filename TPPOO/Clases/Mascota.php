@@ -183,10 +183,10 @@
 
         //Para obtener las mascotas asociadas a un cliente especifico, tmb esta hardcodeado la db
         public static function getMascotasByClienteId($clienteId) {
-            $host = 'batyr.db.elephantsql.com';      
-            $dbname = 'fklvtlhv';   
-            $usuario = 'fklvtlhv';      
-            $contrasena = 'fcVvnsbFt7cHt2ShFf5rUg2yJsZwEKOM'; 
+            $host = 'sql10.freesqldatabase.com';      
+            $dbname = ' sql10763804';   
+            $usuario = 'sql10763804';      
+            $contrasena = 'YW49tuyKvg'; 
     
             try {
                 $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $usuario, $contrasena);

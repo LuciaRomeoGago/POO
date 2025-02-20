@@ -163,10 +163,10 @@
 
         // busca un cliente por su ID en la base de datos, esta harcodeado lo del a db, podria cambiarlo
         public static function buscarPorId($clienteId) {
-            $host = 'batyr.db.elephantsql.com';      
-            $dbname = 'fklvtlhv';   
-            $usuario = 'fklvtlhv';      
-            $contrasena = 'fcVvnsbFt7cHt2ShFf5rUg2yJsZwEKOM';      
+            $host = 'sql10.freesqldatabase.com';      
+            $dbname = 'sql10763804';   
+            $usuario = 'sql10763804';      
+            $contrasena = 'YW49tuyKvg';      
     
             try {
                 $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $usuario, $contrasena);

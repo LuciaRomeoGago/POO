@@ -112,16 +112,28 @@ class Conexion {
 
     private function __construct() {
         // Configuración de la conexión a la base de datos PostgreSQL
-        $host = 'batyr.db.elephantsql.com';
-        $puerto = '5432';
-        $dbname = 'fklvtlhv';
-        $usuario = 'fklvtlhv';
-        $contrasena = 'fcVvnsbFt7cHt2ShFf5rUg2yJsZwEKOM';
-
+       /* $host = 'sql10.freesqldatabase.com';
+        $puerto = '3306';
+        $dbname = 'sql10763804';
+        $usuario = 'sql10763804';
+        $contrasena = 'YW49tuyKvg';
+*/
+$servername = "sql10.freesqldatabase.com";
+$database = "sql10763804";
+$username = "sql10763804";
+$password = "YW49tuyKvg";
+// Create connection
+$conn = mysqli_connect($servername, $username, $password, $database);
+// Check connection
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+echo "Connected successfully";
+mysqli_close($conn);
         try {
             // Crear una instancia de PDO
-            $dsn = "pgsql:host=$host;dbname=$dbname;port=$puerto;sslmode=require"; //crea cadena de conexion para PostgreSQL
-            self::$db = new PDO($dsn, $usuario, $contrasena);
+            $dsn = "pgsql:host=$servername;dbname=$database"; //crea cadena de conexion para PostgreSQL
+            self::$db = new PDO($dsn, $username, $password);
             self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             echo "Conexión OK con PDO";
         } catch (PDOException $e) {
