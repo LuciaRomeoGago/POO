@@ -2,23 +2,21 @@
 require_once ('Menu' . DIRECTORY_SEPARATOR . 'Menu.php');
 require_once ('Conexion' . DIRECTORY_SEPARATOR . 'Conexion.php');
 require_once ('Menu'. DIRECTORY_SEPARATOR . 'MenuAdministrador.php');
-/*// Main
-$menu = new Menu();
-
-$menu->cls();
-$menu->pantallaBienvenida('Veterinaria Patitas');
-
+// QUIERO QUE FUNCIONE SOLO CON ESTO ASOCIADO A MENUADMIN
+// Main
 $db= Conexion::getConexion();
 
-//Crea isntancia para acceder a sus metodos
+
+//Crea una instancia para acceder a sus metodos
 $menuAdmin = new MenuAdmin();
 
 //Menu principal para seleccionar el rol (Cliente o Veterinario)
 $titulo= 'Seleccione su perfil de ingreso';
+
 $opciones = [
-    [0, "Salir del sistema",[$menu, "exit"]],
-    [1, "Entrar como Cliente", [$menu, "menuCliente"]],
-    [2, "Entrar como Veterinario", [$menu], "menuVeterinario"]
+    [0, "Salir del sistema",[$menuAdmin, "exit"]],
+    [1, "Entrar como Cliente", [$menuAdmin, "menuCliente"]],
+    [2, "Entrar como Veterinario", [$menuAdmin], "menuVeterinario"]
 ];
 
 //Mostrar el menu de seleccion
@@ -27,7 +25,7 @@ $menuAdmin->mostrarMenu($titulo,$opciones);
 $menu->pantallaDespedida();
 
 $db=Conexion::closeConexion();
-*/
+/*
 $menu = new Menu();
 $clienteManager = new ClienteManager();
 
@@ -38,23 +36,23 @@ while (true) {
     
     switch ($opcion) {
         case '1':
-            // Veterinarian Menu
+            // Menu del veterinario
             while (true) {
                 $menu->displayVeterinarianMenu();
-                $veterinarianOption = Menu::readln("Seleccione una opción: ");
+                $opcionVeterinario = Menu::readln("Seleccione una opción: ");
                 
-                switch ($veterinarianOption) {
+                switch ($opcionVeterinario) {
                     case '1':
-                        // Logic to add a pet (implement this as needed)
+                        $VeterinarioManager->altaMascota(); // crea la mascota
                         break;
                     case '2':
-                        // Logic to modify a pet (implement this as needed)
+                        $MascotaManager->modificar();// modifica la mascota, podria mandarlo al veterinariomanager, no?
                         break;
                     case '3':
-                        // Logic to delete a pet (implement this as needed)
+                        $MascotaManager->baja();// Logic to delete a pet (implement this as needed)
                         break;
                     case '4':
-                        // Logic to show pets (implement this as needed)
+                        $VeterinarioManager->mostrarMascotas;// Logic to show pets (implement this as needed)
                         break;
                     case '5':
                         break 2; // Exit to main menu
@@ -98,3 +96,4 @@ while (true) {
             Menu::writeln("Opción no válida. Intente de nuevo.");
     }
 }
+*/

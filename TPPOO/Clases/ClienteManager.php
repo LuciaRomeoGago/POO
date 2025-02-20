@@ -5,43 +5,53 @@ require_once('Lib' . DIRECTORY_SEPARATOR . 'interface.php');
 
 class ClienteManager extends arrayIdManager{
 
-    //De la base de datos levanta los clientes y los agrega al arreglo para manipularlos
+    //De la base de datos levanta los clientes y los agrega al arreglo para manipularlos (lee datos de clientes desde db y crear objetos clientes con esos datos)
     public function levantar(){
-        $sql = "select * 
+        try {
+         $sql = "select * 
                 from Cliente";
-        $clientes = Conexion::query($sql);
+             $clientes = Conexion::query($sql); //utiliza la consulta usando metodo query de conexion y almacena resultados en $clientes
         
-        // Verificar si se obtuvieron resultados
-        if ($clientes === false || empty($clientes)) {
-         echo "No se encontraron clientes en la base de datos." . PHP_EOL;
-         return; // Salir del método si no hay clientes
-        }
+            // Verificar si se obtuvieron resultados
+             if ($clientes === false || empty($clientes)) {
+             echo "No se encontraron clientes en la base de datos." . PHP_EOL;
+             return; // Salir del método si no hay clientes
+            }
 
-        foreach ($clientes as $cliente){
-            //crea el objeto cliente
-            $nuevoCliente = new Cliente(
-                $cliente->nombre,
-                $cliente->dni,
-            );
+             foreach ($clientes as $cliente) {
+                 if (!array_key_exists('id', $cliente)) {
+                     echo "Advertencia: No se encontró la clave 'id' para un cliente." . PHP_EOL;
+                     continue;
+                    }
+                     // Acceder a los valores por su clave (nombre de la columna en la base de datos)
+                 $nombre = $cliente['nombre'];
+                 $dni = $cliente['dni'];
+                 $id = $cliente['id'];
+
+                 // Crear el objeto Cliente y agregarlo al arreglo
+                   $nuevoCliente = new Cliente(
+                   $nombre,
+                   $dni,
+                   $id  // Asignar ID desde la base de datos
+                 );
+
+                 // Agregar al arreglo gestionado por ArrayIdManager
+                 $this->agregar($nuevoCliente);
+               } } catch (PDOException $e) {
+                 echo "Error al levantar clientes: " . htmlspecialchars($e->getMessage());
+                }
+            }
     
-            // Asignar el ID de la base de datos al objeto Cliente
-            $nuevoCliente->setId($cliente->id);
     
-            // Agregar el cliente al arreglo
-            $this->agregar($nuevoCliente);
-        }
-    }
-    
-    //Crea el arreglo de Carreras a partir de los datos de la base de datos
     public function __construct() {
-        $this->levantar();
+        $this->levantar(); //llama al metodo levantar para cargar clientes desde db al crear una isntancia de clientemanager
     }
     
 
-    //   Guarda el cliente en la base de datos y le setea el id generado por la base de datos al insertarlo
+    //  (crea nuevo cliente en el sistema) Guarda el cliente en la base de datos y le setea el id generado por la base de datos al insertarlo
     public function alta() {
-        $nombre = Menu::readln("Ingrese su nombre y apellido: ");
-        $dni = Menu::readln("Ingrese su dni: ");
+        $nombre = Menu::readln("Ingrese el nombre y apellido del cliente: ");
+        $dni = Menu::readln("Ingrese el dni del cliente: ");
 
         //Crea el nuevo objeto cliente
         $cliente = new Cliente($nombre,$dni);
@@ -74,7 +84,7 @@ class ClienteManager extends arrayIdManager{
         $rta = Menu::readln("El cliente se ha creado con éxito");
     }
 
-    //Dar de baja un cliente, se pide el id del cliente a eliminar. Se elimina de la base de datos y del arreglo
+    //Dar de baja(elimina) un cliente, se pide el id del cliente a eliminar. Se elimina de la base de datos y del arreglo
     public function baja(){
         $id = Menu::readln("Ingrese el id cliente a eliminar:");
         if ($this->existeId($id)){
@@ -94,7 +104,7 @@ class ClienteManager extends arrayIdManager{
         }
     }
     
-    // Actualizar los datos de un cliente por su ID
+    // Actualizar los datos de un cliente existente por su ID
     public function modificarCliente() {
 	    $id = Menu::readln("Ingrese Id de cliente a modificar: ");
         if($this->existeId($id)){
@@ -127,7 +137,7 @@ class ClienteManager extends arrayIdManager{
 		$clientes = $this->getArreglo();
 		Menu::cls();		
 		Menu::subtitulo('Lista de los clientes existentes en nuestro sistema');
-		$lineas = 0;
+		$lineas = 0; // para controlar la cantidad de clientes mostrados por pantalla y hace pausa c/cierta cant de lineas
 		  
       foreach ($clientes as $cliente) {
 	    	$cliente->mostrar();

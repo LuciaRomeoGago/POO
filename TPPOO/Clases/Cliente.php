@@ -8,11 +8,11 @@
         public function __construct($nombre,$dni, $id = null){
             $this->nombre=$nombre;
             $this->dni=$dni;
-            $this->id=$id ?? uniqid('Cliente_', true);
-            $this->referenciaAnimal=[];
+            $this->id=$id ?? uniqid('Cliente_', true); // unico de c/cliente, si no se proporciona, se genera automaticamente
+            $this->referenciaAnimal=[]; //array, almacena las mascotas asociadas al cliente
         }
 
-        // Getters 
+        // Getters, permiten acceder a las propiedades privadas de la clase sin que sus valores se modifiquen directamente
 
         public function getNombre(){
             return $this->nombre;
@@ -29,7 +29,7 @@
             return $this->referenciaAnimal;
         }
 
-        // Setters
+        // Setters, permiten modificar las propiedades, algunas retornan $this para permitir encadenar llamadas
 
         public function setNombre($nombre) {
             $this->nombre = $nombre;
@@ -44,15 +44,20 @@
             $this->id = $id;
         }
 
-        //Metodos
-
-        // Agregar una mascota
-        public function agregarMascota(Mascota $mascota) {
-            $mascota->setClienteId($this->getId()); //Establece el clienteId antes de agregar la mascota
-          $this->referenciaAnimal[] = $mascota; // Agregar la mascota al array
+        public function setMascotas($mascotas){ //establece las mascotas asociadas al cliente si es necesario
+            $this->referenciaAnimal = $mascotas;
         }
 
-        // Mostrar todas las mascotas del cliente
+
+        //Metodos
+
+        // Agregar una mascota, establece el id de cliente, y permite agregar una instancia de mascota a este
+        public function agregarMascota(Mascota $mascota) {
+            $mascota->setClienteId($this->getId()); 
+          $this->referenciaAnimal[] = $mascota; 
+        }
+
+        // Mostrar todas las mascotas del cliente, verifica si hay mascotas y las imprime con el metodo mostrar() de c/mascota
         public function mostrarMascotas() {
            if (empty($this->referenciaAnimal)) {
              echo "Este cliente no tiene mascotas." . PHP_EOL;
@@ -62,21 +67,22 @@
             echo "Mascotas del cliente " . htmlspecialchars($this->getNombre()) . ":" . PHP_EOL;
             foreach ($this->referenciaAnimal as $mascota) {
              echo "- ";
-             $mascota->mostrar(); // Llamar al método mostrar de cada mascota
+             $mascota->mostrar(); 
             }
         }
 
-        //Muestra por pantalla un cliente
+        //Muestra por pantalla un cliente y llama para mostrar sus mascotas
         public function mostrar(){
         echo "Dni: " . $this->getDni() 
             . ", Nombre: " . $this->getNombre() 
             . PHP_EOL;
-            $this->mostrarMascotas(); // Llama al método para mostrar las mascotas
+            $this->mostrarMascotas(); 
         }
 
         // Guarda en la base de datos
         public function guardar() {
           try {
+            //prepara y ejecuta consulta para insertar el cliente
              $sql = "INSERT INTO Cliente (nombre, dni, id)
                     VALUES (:nombre, :dni, :id)";
                     
@@ -132,7 +138,7 @@
           try {  
             //prepara la consulta SQL
             $sql = "UPDATE Cliente SET nombre = :nombre
-            WHERE id = :id";
+                    WHERE id = :id";
 
          // Prepara la declaración
           $stmt = Conexion::prepare($sql);
@@ -154,4 +160,43 @@
             }
             return false;
         } 
+
+        // busca un cliente por su ID en la base de datos, esta harcodeado lo del a db, podria cambiarlo
+        public static function buscarPorId($clienteId) {
+            $host = 'batyr.db.elephantsql.com';      
+            $dbname = 'fklvtlhv';   
+            $usuario = 'fklvtlhv';      
+            $contrasena = 'fcVvnsbFt7cHt2ShFf5rUg2yJsZwEKOM';      
+    
+            try {
+                $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $usuario, $contrasena);
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+                $stmt = $pdo->prepare("SELECT id, nombre, dni 
+                                       FROM Cliente 
+                                       WHERE id = :id"); //me dice que sino use en vez id=? pero no me funcionaba asi
+                $stmt->execute([':id'=>$clienteId]);
+                $clienteData = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+                if ($clienteData) {
+                    // Crear el cliente
+                    $cliente = new Cliente($clienteData['nombre'], $clienteData['dni'], $clienteData['id']);
+    
+                    // Tengo método estático en la clase Mascota para obtener las mascotas por ID de cliente
+                    $cliente->setMascotas(Mascota::getMascotasByClienteId($cliente->getId()));
+    
+                    return $cliente;
+                } else {
+                    return null;
+                }
+    
+            } catch (PDOException $e) {
+                // Manejar errores de conexión o consulta
+                error_log("Error en buscarPorId: " . $e->getMessage()); // Log del error
+                return null; 
+            } finally {
+                //Cerrar la conexion
+                $pdo = null;
+            }
+        }
     }

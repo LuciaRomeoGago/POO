@@ -12,13 +12,12 @@
 
   class Cliente {
     -nombre: string
-    -dni: string
+    -dni: int
     -id: int
-    -telefono: string
-    -direccion: string
-    +__construct(nombre: string, dni: string, telefono: string, direccion: string): void
+    -referenciaAnimal: array
+    +__construct(nombre: string, dni: int, referenciaAnimal: array): void
     +getNombre(): string
-    +getDni(): string
+    +getDni(): int
     +getId(): int
   }
 

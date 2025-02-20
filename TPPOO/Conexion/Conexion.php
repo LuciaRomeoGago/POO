@@ -1,5 +1,5 @@
 <?php
-    class Conexion{
+/*    class Conexion{
     
         private static $db = null;
             
@@ -13,7 +13,7 @@
             }
             return null;
         }
-        */
+        
         private function __construct(){
                 $servidor= 'batyr.db.elephantsql.com';
                 $usuario= 'fklvtlhv';
@@ -35,7 +35,7 @@
                  		echo 'Error de conexión: no se puede acceder al archivo con los datos de acceso a la Base de Datos' . PHP_EOL;
                 }
                  
-            }*/  $conn = new PDO($servidor, $usuario, $contrasena);
+             $conn = new PDO($servidor, $usuario, $contrasena);
                  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                  echo "Conexión OK con PDO";
                 } catch (PDOException $e) {
@@ -55,7 +55,7 @@
         
         /**
         * Recibe un sql de consulta y devuelve un arreglo de objetos
-         */
+         
         static function query($sql) {
 				try {
         			$pDO = self::getConexion();
@@ -105,4 +105,76 @@
         static function closeConexion() {
             self::$db = null;
         }
+    }*/
+
+class Conexion {
+    private static $db = null; // almacena instancia de conexion a db, se incializa como que no hay conexion al principio
+
+    private function __construct() {
+        // Configuración de la conexión a la base de datos PostgreSQL
+        $host = 'batyr.db.elephantsql.com';
+        $puerto = '5432';
+        $dbname = 'fklvtlhv';
+        $usuario = 'fklvtlhv';
+        $contrasena = 'fcVvnsbFt7cHt2ShFf5rUg2yJsZwEKOM';
+
+        try {
+            // Crear una instancia de PDO
+            $dsn = "pgsql:host=$host;dbname=$dbname;port=$puerto;sslmode=require"; //crea cadena de conexion para PostgreSQL
+            self::$db = new PDO($dsn, $usuario, $contrasena);
+            self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            echo "Conexión OK con PDO";
+        } catch (PDOException $e) {
+            // Manejo de errores de conexión
+            echo 'Error de conexión: ' . $e->getMessage();
+        }
     }
+
+    // Retorna la conexión ya establecida a la DB, si no existe la establece
+    static function getConexion() {
+        if (self::$db === null) {
+            new self(); // Si no hay conexión, crea una nueva instancia
+        }
+        return self::$db;
+    }
+
+    // Ejecuta una consulta SQL y devuelve un arreglo de resultados
+    static function query($sql) {
+        try {
+            $statement = self::getConexion()->query($sql);
+            if ($statement === false) {
+                throw new PDOException("Error al ejecutar la consulta: " . self::getConexion()->errorInfo()[2]);
+            }
+            $resultado = $statement->fetchAll();
+            return $resultado;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+    // Ejecuta una consulta SQL sin necesidad de obtener resultados (INSERT, UPDATE, DELETE)
+    static function ejecutar($sql) {
+        try {
+            self::getConexion()->exec($sql);
+            return true;
+        } catch (PDOException $e) {
+            echo "Error: datos ingresados inválidos " . htmlspecialchars($e->getMessage());
+            return false;
+        }
+    }
+
+    // Prepara una sentencia SQL para su ejecución
+    static function prepare($sql) {
+        return self::getConexion()->prepare($sql);
+    }
+
+    // Obtiene el último ID insertado
+    static function getLastId() {
+        return self::getConexion()->lastInsertId();
+    }
+
+    // Cierra la conexión con la base de datos
+    static function closeConexion() {
+        self::$db = null;
+    }
+}

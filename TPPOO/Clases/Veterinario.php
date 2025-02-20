@@ -36,7 +36,6 @@ class Veterinario {
         $this->id = $id;
     }
 
-    //Metodos
 
     // Método para mostrar información del veterinario
     public function mostrar() {
@@ -46,12 +45,12 @@ class Veterinario {
             . PHP_EOL;
     }
 
-    // Guardar en la base de datos
+   /////////////////////// // Guardar en la base de datos
     public function guardar() {
         try {
             $sql = "INSERT INTO Veterinario (nombre, especialidad) VALUES (:nombre, :especialidad)";
             $stmt = Conexion::prepare($sql);
-            $stmt->bindParam(':nombre', $this->nombre);
+            $stmt->bindParam(':nombre', $this->nombre); // vincula los parametros a valores correspondientes
             $stmt->bindParam(':especialidad', $this->especialidad);
 
             if ($stmt->execute()) {

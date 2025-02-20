@@ -108,6 +108,8 @@ class Menu {
         $menuAdmin->menuPrincipal(); // Inicia el menú principal del administrador
     }
 
+    
+// estos tres no los uso en ninguna parte del codigo 
     // Main menu display
     public static function displayMainMenu() {
         self::writeln("\n--- Menú Principal ---");
@@ -129,10 +131,10 @@ class Menu {
     // Client menu display
     public static function displayClientMenu() {
         self::writeln("\n--- Menú Cliente ---");
-        self::writeln("1. Crear Cliente");
-        self::writeln("2. Modificar Cliente");
-        self::writeln("3. Eliminar Cliente");
-        self::writeln("4. Mostrar Clientes");
+        self::writeln("1. Crear una Mascota");
+        self::writeln("2. Modificar Mascota/s");
+        self::writeln("3. Eliminar Mascota/s");
+        self::writeln("4. Mostrar mis mascotas");
         self::writeln("5. Volver al Menú Principal");
     }
 }

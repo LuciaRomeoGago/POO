@@ -1,10 +1,15 @@
-(Medio conflictuado)
 
-(1 ; n)  Veterinaria tiene muchos productos, servicios, turnos, clientes y ventas. 
-(1 ; n)  Cliente puede tener una o mas mascotas, pero una mascota no puede tener mas de un dueno (dos capaz, onda sus papis? a chequear)
-?(1 ; 1) Venta se relaciona con un producto o un servicio
-(1 ; n)  Una venta se realiza por un cliente, y un cliente puede tener varias ventas
-(1 ; n)  Un turno tiene un cliente y mascota, estos pueden tener un turno o mas.
-(1 ; n)  Una venta puede tener muchos detalles de venta, pero cada detalle de venta pertenece a una sola venta.
-(1 ; n)  Un producto puede aparecer en muchos detalles de venta, pero cada detalle de venta puede incluir un solo producto.
-(1 ; 1)  Un turno puede aparecer en un detalle de venta, y cada detalle de venta puede incluir un solo turno.
+
+(1 ; N)  Veterinaria tiene muchos Productos.
+(1 ; 1) Un producto pertenece a una Veterinaria.
+(1 ; N) Una Veterinaria ofrece muchos Servicios.
+(1 ; 1) Un Servicio es ofrecido por una Veterinaria.
+(1 ; N) Una Veterinaria gestiona muchos Turnos.
+(1 ; 1) Un turno es gestionado por una Veterinaria.
+(1 ; N) Una Veterinaria atiende muchos Clientes.
+(1 ; 1) Un Cliente es atendido por una Veterinaria.
+(1 ; N) Un Cliente posee muchas Mascotas.
+(1 ; 1) Una Mascota es propiedad de un Cliente.
+(1 ; 1) Un Turno es solicitado por un Cliente para una Mascota.
+(1 ; N) Un Cliente puede tener muchos Turnos para sus Mascotas.
+(1 ; N) Una Mascota puede tener muchos Turnos.

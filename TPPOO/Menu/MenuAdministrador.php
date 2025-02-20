@@ -6,7 +6,6 @@ require_once('Clases' . DIRECTORY_SEPARATOR . 'VeterinarioManager.php');
 
 class MenuAdmin extends Menu {
     private $clienteManager;
-    private $mascotaManager;
     private $veterinarioManager;
 
     public function __construct() {
@@ -24,11 +23,11 @@ class MenuAdmin extends Menu {
         $opciones[0][2] = array($this, "exit");
 
         $opciones[1][0] = 1;
-        $opciones[1][1] = "Entrar como Cliente";
+        $opciones[1][1] = "Ingresar como Cliente";
         $opciones[1][2] = array($this, "menuCliente");
 
         $opciones[2][0] = 2;
-        $opciones[2][1] = "Entrar como Veterinario";
+        $opciones[2][1] = "Ingresar como Veterinario";
         $opciones[2][2] = array($this, "menuVeterinario");
 
         self::menu($titulo, $opciones);
@@ -51,7 +50,7 @@ class MenuAdmin extends Menu {
         // Menú de operaciones con mascotas
         $titulo = "Administre sus mascotas: " . htmlspecialchars($clienteSeleccionado->getNombre());
         
-        // Opciones del menú
+        // Opciones del menú, TODO ASOCIADO BIEN, creo
         $opciones = [];
         
         $opciones[0][0] = 0;
@@ -105,10 +104,12 @@ class MenuAdmin extends Menu {
 
 		$opciones[2][0] = 2;
 		$opciones[2][1] = "Administrar Mascotas";
-		$opciones[2][2] = array($this, 'ABMmascotas'); // Método para gestionar mascotas
+		$opciones[2][2] = array($this, 'AdministrarMascotas'); // Método para gestionar mascotas
 
 		self::menu($titulo, $opciones);
     }
+
+
 
     // Menú para administrar mascotas (por veterinarios)
     protected function AdministrarMascotas() {
@@ -153,6 +154,7 @@ class MenuAdmin extends Menu {
 	    self::menu($titulo, $opciones);
         }
 
+        
         protected function AdministrarClientes() {
             // Menú para administrar clientes
             $titulo = "Menu administrativo de Clientes";
@@ -174,7 +176,7 @@ class MenuAdmin extends Menu {
         
             $opciones[3][0] = 3;
             $opciones[3][1] = "Modificar cliente";
-            $opciones[3][2] = array($this->clienteManager, "modificar");
+            $opciones[3][2] = array($this->clienteManager, "modificarCliente");
         
             $opciones[4][0] = 4;
             $opciones[4][1] = "Mostrar todos los clientes";

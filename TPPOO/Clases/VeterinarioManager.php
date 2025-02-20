@@ -1,9 +1,11 @@
 <?php
 require_once('clases' . DIRECTORY_SEPARATOR . 'Veterinario.php');
+require_once('clases' . DIRECTORY_SEPARATOR . 'Cliente.php');
 require_once('Lib' . DIRECTORY_SEPARATOR . 'interface.php');
 
 class VeterinarioManager extends ArrayIdManager{
 
+	// recupera todos los veterinarios de la db
     public function levantar() {
         try {
             $sql = "SELECT * FROM Veterinario";
@@ -25,6 +27,7 @@ class VeterinarioManager extends ArrayIdManager{
         }
     }
 
+	// permite ingresar detalles de un nuevo veterinario
     public function alta() {
         echo "Ingrese nombre del veterinario: ";
         $nombre = trim(fgets(STDIN));
@@ -44,6 +47,7 @@ class VeterinarioManager extends ArrayIdManager{
         }
     }
 
+	// elimina un veterinario existente
     public function baja() {
         echo "Ingrese ID del veterinario a eliminar: ";
         $id = trim(fgets(STDIN));
@@ -78,6 +82,7 @@ class VeterinarioManager extends ArrayIdManager{
 		}
 	}
 
+	// modifica detalles de un veterinario
 	public function modificar($elementoModificado) {
 		echo "Ingrese ID del veterinario a modificar: ";
 		$id = trim(fgets(STDIN));
@@ -123,6 +128,7 @@ class VeterinarioManager extends ArrayIdManager{
         }
    }
 
+
    public function mostrar() {
 	$veterinarios = $this->getArreglo(); // Obtener el arreglo de veterinarios
 	Menu::cls(); // Limpiar la pantalla
@@ -138,5 +144,56 @@ class VeterinarioManager extends ArrayIdManager{
 	}
 
 	Menu::waitForEnter(); // Esperar a que el usuario presione Enter
+}
+
+// agrega una nueva mascota a un cliente existente
+public function altaMascota() {
+	$clienteId = Menu::readln("Ingrese el Id del dueño de la mascota: ");
+
+	// Buscar al cliente por DNI
+	$cliente = Cliente::buscarPorId($clienteId);
+
+	if ($cliente) {
+		$nombreMascota = Menu::readln("Ingrese el nombre de la mascota: ");
+		$edad = Menu::readln("Ingrese la edad de la mascota: ");
+		$raza = Menu::readln("Ingrese la raza de la mascota: ");
+		$historialMedico = Menu::readln("Ingrese el historial médico de la mascota: ");
+
+		// Crea el nuevo objeto Mascota
+		$mascota = new Mascota($nombreMascota, $edad, $raza, $historialMedico);
+
+		// Asocia la mascota al cliente
+		$cliente->agregarMascota($mascota);
+
+		// Actualiza al cliente en la base de datos (si es necesario)
+		$cliente->guardar();
+
+		// Mensaje de confirmación
+		echo "La mascota se ha agregado exitosamente al cliente con Id " . $clienteId . PHP_EOL;
+	} else {
+		echo "No se encontró ningún cliente con el Id ingresado." . PHP_EOL;
+	}
+
+	$rta = Menu::readln("Presione Enter para continuar...");
+}
+
+
+// muestra mascotas asociadas a un cliente especifico
+public function mostrarMascota() {
+    // Pedir al veterinario que ingrese el ID del cliente
+    $clienteId = Menu::readln("Ingrese el ID del cliente para mostrar sus mascotas: ");
+    
+    // Buscar el cliente por ID
+    $cliente = Cliente::buscarPorId($clienteId); 
+
+    if ($cliente === null) {
+        echo "No se encontró un cliente con el ID ingresado." . PHP_EOL;
+        return; // Salir si no se encuentra el cliente
+    }
+
+    // Llamar directamente al método mostrarMascotas() del cliente
+    $cliente->mostrarMascotas(); // Este método ya imprime las mascotas o un mensaje si no hay ninguna
+
+    Menu::waitForEnter(); // Esperar a que el usuario presione Enter antes de continuar
 }
 }
