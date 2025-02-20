@@ -167,36 +167,37 @@
             $dbname = 'sql10763804';   
             $usuario = 'sql10763804';      
             $contrasena = 'YW49tuyKvg';      
-    
+        
             try {
+                // Crear la conexión PDO
                 $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $usuario, $contrasena);
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-                $stmt = $pdo->prepare("SELECT id, nombre, dni 
-                                       FROM Cliente 
-                                       WHERE id = :id"); //me dice que sino use en vez id=? pero no me funcionaba asi
-                $stmt->execute([':id'=>$clienteId]);
+        
+                // Preparar la consulta
+                $stmt = $pdo->prepare("SELECT id, nombre, dni FROM Cliente WHERE id = :id");
+                $stmt->execute([':id' => $clienteId]);
+        
+                // Recuperar los datos del cliente
                 $clienteData = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+        
+                // Si existen datos del cliente, proceder a crear el objeto Cliente
                 if ($clienteData) {
-                    // Crear el cliente
                     $cliente = new Cliente($clienteData['nombre'], $clienteData['dni'], $clienteData['id']);
-    
-                    // Tengo método estático en la clase Mascota para obtener las mascotas por ID de cliente
+        
+                    // Asignar las mascotas del cliente utilizando el método estático de la clase Mascota
                     $cliente->setMascotas(Mascota::getMascotasByClienteId($cliente->getId()));
-    
+        
                     return $cliente;
                 } else {
+                    // Si no se encontró el cliente, devolver null
                     return null;
                 }
-    
+                
             } catch (PDOException $e) {
-                // Manejar errores de conexión o consulta
-                error_log("Error en buscarPorId: " . $e->getMessage()); // Log del error
+                // Manejar errores de conexión o ejecución de la consulta
+                error_log("Error en buscarPorId: " . $e->getMessage()); // Registrar el error
                 return null; 
-            } finally {
-                //Cerrar la conexion
-                $pdo = null;
             }
         }
+        
     }

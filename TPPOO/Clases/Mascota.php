@@ -183,43 +183,41 @@
 
         //Para obtener las mascotas asociadas a un cliente especifico, tmb esta hardcodeado la db
         public static function getMascotasByClienteId($clienteId) {
-            $host = 'sql10.freesqldatabase.com';      
-            $dbname = ' sql10763804';   
-            $usuario = 'sql10763804';      
-            $contrasena = 'YW49tuyKvg'; 
-    
             try {
-                $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $usuario, $contrasena);
-                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
+                // Obtener la conexión reutilizable
+                $pdo = Conexion::getConexion();
+        
+                // Preparar la consulta
                 $stmt = $pdo->prepare("SELECT id, nombre, edad, raza, historialMedico 
                                        FROM Mascota 
                                        WHERE clienteId = :clienteId");
-                $stmt->execute([$clienteId]);
+                // Ejecutar la consulta
+                $stmt->execute([':clienteId' => $clienteId]);
+        
+                // Obtener todas las mascotas
                 $mascotasData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+        
                 $mascotas = [];
+                // Crear objetos de tipo Mascota a partir de los resultados
                 foreach ($mascotasData as $mascotaData) {
                     $mascota = new Mascota(
                         $mascotaData['nombre'],
                         $mascotaData['edad'],
                         $mascotaData['raza'],
-                        $mascotaData['historialmedico'],
+                        $mascotaData['historialMedico'],
                         $mascotaData['id']
                     );
                     $mascotas[] = $mascota;
                 }
-    
+        
                 return $mascotas;
-    
+        
             } catch (PDOException $e) {
                 // Manejar errores de conexión o consulta
                 error_log("Error en getMascotasByClienteId: " . $e->getMessage());
-                return []; 
-            } finally {
-                //Cerrar la conexion
-                $pdo = null;
+                return []; // Retorna un arreglo vacío en caso de error
             }
         }
+        
 
     }
