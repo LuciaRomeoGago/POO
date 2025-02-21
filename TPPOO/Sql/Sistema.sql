@@ -1,16 +1,16 @@
 CREATE TABLE Cliente (
-    id SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    dni VARCHAR(20) NOT NULL UNIQUE
+    id INT(11) PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    dni int(11) NOT NULL UNIQUE
 );
 
 CREATE TABLE Mascota (
-    id VARCHAR(255) PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    edad INT NOT NULL,
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    edad INT(11) NOT NULL,
     raza VARCHAR(50) NOT NULL,
-    clienteId INT,
     historialMedico TEXT,
+    clienteId INT(11),
     FOREIGN KEY (clienteId) REFERENCES Cliente(id) ON DELETE CASCADE
 );
 

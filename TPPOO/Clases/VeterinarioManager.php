@@ -8,15 +8,16 @@ class VeterinarioManager extends ArrayIdManager{
 	// recupera todos los veterinarios de la db
     public function levantar() {
         try {
-            $sql = "SELECT * FROM Veterinario";
+            $sql = "select * 
+			        from Veterinario";
             $veterinarios = Conexion::query($sql);
 
-            foreach ($veterinarios as $veterinario) {
+           /* foreach ($veterinarios as $veterinario) {
                 // Crear el objeto Veterinario y agregarlo al arreglo
                 $nuevoVeterinario = new Veterinario(
                     $veterinario->nombre,
                     $veterinario->especialidad,
-                    $veterinario->id  // Asignar ID desde la base de datos
+					$veterinario->id  // Asignar ID desde la base de datos
                 );
                 
                 // Agregar al arreglo gestionado por ArrayIdManager
@@ -24,7 +25,31 @@ class VeterinarioManager extends ArrayIdManager{
             }
         } catch (PDOException $e) {
             echo "Error al levantar veterinarios: " . htmlspecialchars($e->getMessage());
-        }
+        }*/
+		  // Verificar si se obtuvieron resultados
+		  if ($veterinarios === false || empty($veterinario)) {
+			echo "No se encontraron clientes en la base de datos." . PHP_EOL;
+			return; // Salir del método si no hay clientes
+		   }
+
+			foreach ($veterinarios as $veterinario) {
+				if (!array_key_exists('id', $veterinario)) {
+					echo "Advertencia: No se encontró la clave 'id' para un cliente." . PHP_EOL;
+					continue;
+				   }
+		
+				// Crear el objeto Veterinario y agregarlo al arreglo
+				  $nuevoVeterinario = new Veterinario(
+					$veterinario['nombre'],
+					$veterinario['especialidad'],
+					$veterinario['id'] 
+				);
+
+				// Agregar al arreglo gestionado por ArrayIdManager
+				$this->agregar($nuevoVeterinario);
+			  } } catch (PDOException $e) {
+				echo "Error al levantar veterinarios: " . htmlspecialchars($e->getMessage());
+			   }
     }
 
 	// permite ingresar detalles de un nuevo veterinario
@@ -196,4 +221,6 @@ public function mostrarMascota() {
 
     Menu::waitForEnter(); // Esperar a que el usuario presione Enter antes de continuar
 }
+
 }
+

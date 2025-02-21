@@ -34,6 +34,10 @@
             return $this->id;
         }
 
+        public function getClienteId(){
+            return $this->clienteId;
+        }
+
         public function getHistorialMedico(){
             return $this->historialMedico;
         }
@@ -79,8 +83,8 @@
 
         //guarda o actualiza la info de la masctoa en la db
         public function guardar() {
-            $sql = "";
-            try {
+            /*$sql = "";
+            */try {/*
                 // Determinar si es una inserción o actualización
                 if ($this->id == null) {
                     // Inserción
@@ -92,7 +96,10 @@
                             historialMedico = :historialMedico, clienteId = :clienteId
                             WHERE id = :id";
                 }
-    
+    */
+                  // Consulta SQL para insertar una nueva mascota
+            $sql = "INSERT INTO Mascota (nombre, edad, raza, historialMedico, clienteId) 
+                    VALUES (:nombre, :edad, :raza, :historialMedico, :clienteId)";
                 $stmt = Conexion::prepare($sql);  // Utiliza tu clase de conexión
     
                 // Vincular los parámetros
@@ -102,11 +109,11 @@
                 $stmt->bindParam(':historialMedico', $this->historialMedico);
                 $stmt->bindParam(':clienteId', $this->clienteId);
     
-                // Si es una actualización, vincular el ID
+                /*// Si es una actualización, vincular el ID
                 if ($this->id != null) {
                     $stmt->bindParam(':id', $this->id);
                 }
-    
+    */
                 // Ejecutar la consulta
                 if ($stmt->execute()) {
                     // Si es una inserción, obtener el ID generado
@@ -149,10 +156,11 @@
   
   
         // Modifica la mascota en la base de datos
-        public function modificar() {
+       /* public function modificar() {
             try {  
                 //prepara la consulta SQL
-                $sql = "UPDATE Mascota SET nombre = :nombre,
+                $sql = "UPDATE Mascota SET 
+                      nombre = :nombre,
                       edad = :edad,
                       raza = :raza,
                       historialMedico = :historialMedico
@@ -179,7 +187,108 @@
                 } catch (PDOException $e) {
                  echo "Error al modificar la mascota: " . $e->getMessage();
                 }
-        } 
+        }
+        
+        public function modificar(Mascota $mascota) {
+            try {  
+                // Prepara la consulta SQL
+                $sql = "UPDATE Mascota SET 
+                            nombre = :nombre,
+                            edad = :edad,
+                            raza = :raza,
+                            historialMedico = :historialMedico
+                        WHERE id = :id";
+        
+                // Prepara la declaración
+                $stmt = Conexion::prepare($sql);
+                
+                // Asocia parámetros
+                $stmt->bindParam(':nombre', $mascota->getNombre());
+                $stmt->bindParam(':edad', $mascota->getEdad());
+                $stmt->bindParam(':raza', $mascota->getRaza());
+                $stmt->bindParam(':historialMedico', $mascota->getHistorialMedico());
+                $stmt->bindParam(':id', $mascota->getId());
+        
+                // Ejecuta la consulta
+                if ($stmt->execute()) { 
+                    echo "Mascota modificada exitosamente."; 
+                    return true; 
+                } else { 
+                    echo "No se pudo modificar la mascota."; 
+                    return false; 
+                }
+        
+            } catch (PDOException $e) {
+                echo "Error al modificar la mascota: " . $e->getMessage();
+                return false; // Retorna false en caso de error
+            }
+        }*/
+
+        public function modificar(Mascota $mascota) {
+            try {
+                // Inicializa la consulta SQL y un array para los parámetros
+                $sql = "UPDATE Mascota SET ";
+                $params = [];
+                
+                // Verifica y agrega cada campo si ha sido modificado
+                if (!empty($mascota->getNombre())) {
+                    $sql .= "nombre = :nombre, ";
+                    $params[':nombre'] = $mascota->getNombre();
+                }
+                
+                if (!empty($mascota->getEdad())) {
+                    $sql .= "edad = :edad, ";
+                    $params[':edad'] = $mascota->getEdad();
+                }
+                
+                if (!empty($mascota->getRaza())) {
+                    $sql .= "raza = :raza, ";
+                    $params[':raza'] = $mascota->getRaza();
+                }
+                
+                if (!empty($mascota->getHistorialMedico())) {
+                    $sql .= "historialMedico = :historialMedico, ";
+                    $params[':historialMedico'] = $mascota->getHistorialMedico();
+                }
+        
+                // Verifica si hay campos para actualizar
+                if (empty($params)) {
+                    echo "No hay cambios para guardar.";
+                    return false;
+                }
+        
+                // Elimina la última coma y espacio
+                $sql = rtrim($sql, ', ');
+        
+                // Agrega la cláusula WHERE
+                $sql .= " WHERE id = :id";
+                $params[':id'] = $mascota->getId();
+        
+                // Prepara la declaración
+                $stmt = Conexion::prepare($sql);
+                
+                // Asocia los parámetros
+                foreach ($params as $key => &$value) {
+                    $stmt->bindParam($key, $value);
+                }
+        
+                // Ejecuta la consulta
+                if ($stmt->execute()) { 
+                    echo "Mascota modificada exitosamente."; 
+                    return true; 
+                } else { 
+                    echo "No se pudo modificar la mascota."; 
+                    return false; 
+                }
+        
+            } catch (PDOException $e) {
+                echo "Error al modificar la mascota: " . $e->getMessage();
+                return false; // Retorna false en caso de error
+            }
+        }
+        
+        
+        
 
         //Para obtener las mascotas asociadas a un cliente especifico, tmb esta hardcodeado la db
         public static function getMascotasByClienteId($clienteId) {

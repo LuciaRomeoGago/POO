@@ -10,7 +10,7 @@ $db= Conexion::getConexion();
 //Crea una instancia para acceder a sus metodos
 $menuAdmin = new MenuAdmin();
 
-//Menu principal para seleccionar el rol (Cliente o Veterinario)
+/*//Menu principal para seleccionar el rol (Cliente o Veterinario)
 $titulo= 'Seleccione su perfil de ingreso';
 
 $opciones = [
@@ -21,8 +21,11 @@ $opciones = [
 
 //Mostrar el menu de seleccion
 $menuAdmin->mostrarMenu($titulo,$opciones);
+*/
+//Muestra el menu principal para seleccionar el perfil
+$menuAdmin->menuPrincipal();
 
-$menu->pantallaDespedida();
+$menuAdmin->pantallaDespedida();
 
 $db=Conexion::closeConexion();
 /*

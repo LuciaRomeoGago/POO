@@ -51,10 +51,11 @@ class ClienteManager extends arrayIdManager{
     //  (crea nuevo cliente en el sistema) Guarda el cliente en la base de datos y le setea el id generado por la base de datos al insertarlo
     public function alta() {
         $nombre = Menu::readln("Ingrese el nombre y apellido del cliente: ");
+        $id = Menu::readln("Ingrese el id del cliente: ");
         $dni = Menu::readln("Ingrese el dni del cliente: ");
 
         //Crea el nuevo objeto cliente
-        $cliente = new Cliente($nombre,$dni);
+        $cliente = new Cliente($nombre,$id,$dni);
 
         //Lo inserta en la base de datos
         $cliente->guardar();
@@ -72,7 +73,8 @@ class ClienteManager extends arrayIdManager{
 
              // Crea el nuevo objeto Mascota
              $mascota = new Mascota($nombreMascota, $edad, $raza, $historialMedico);
-        
+             $mascota->setClienteId($cliente->getId()); // Asigna el ID del cliente a la mascota
+             $mascota->guardar();
              // Agrega la mascota al cliente
              $cliente->agregarMascota($mascota);
         
@@ -149,4 +151,5 @@ class ClienteManager extends arrayIdManager{
         } 
         Menu::waitForEnter();   
     }
+
 }

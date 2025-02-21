@@ -14,11 +14,12 @@ class MascotaManager extends arrayIdManager{ //la clase puede manejar un arreglo
     // Levanta(para obtener) las mascotas del cliente desde la base de datos
     public function levantar() {
         try {
-             $sql = "SELECT * FROM Mascota 
-                WHERE clienteId = :clienteId";
-             $stmt = Conexion::prepare($sql);
-             $stmt->bindParam(':clienteId', $this->cliente->getId());
-             $stmt->execute();
+            $sql = "SELECT * FROM Mascota WHERE clienteId = :clienteId";
+            $stmt = Conexion::prepare($sql);
+            $clienteId = $this->cliente->getId();
+            $stmt->bindParam(':clienteId', $clienteId);
+            $stmt->execute();
+            
              $mascotas = $stmt->fetchAll(PDO::FETCH_OBJ);
 
              foreach ($mascotas as $mascota) {
@@ -29,7 +30,7 @@ class MascotaManager extends arrayIdManager{ //la clase puede manejar un arreglo
                  $mascota->historialMedico
                 );
              //Establezco el ID despues de crear el objeto(anteriormente el objeto queda sin ID)
-             $mascota->setId($mascota->id);
+             $nuevaMascota->setId($mascota->id);
              // Agregar al arreglo
              $this->agregar($nuevaMascota);
             }
@@ -75,48 +76,54 @@ class MascotaManager extends arrayIdManager{ //la clase puede manejar un arreglo
     }
 
     // Método para modificar una mascota
-    public function modificar($elementoModificado) {
+   /* public function modificar($clienteId) {
             $id = Menu::readln("Ingrese Id de la mascota a modificar: ");
-           
-            if($this->existeId($id)){
-                $mascotaModificado = $this->getPorId($id);     
-                
-                if ($mascotaModificado === null) {
-                    echo "No se encontró ninguna mascota con ese ID." . PHP_EOL;
-                    return; // Salir si no se encuentra la mascota
-                }
+            $mascota = $this->getPorId($id); // da la mascota por su ID
 
+           // Verifica si la mascota no existe
+         if ($mascota === null) {
+             Menu::writeln("No se encontró ninguna mascota con ese ID." . PHP_EOL);
+             return; // Salir del método si no se encuentra la mascota
+            }
+
+            if ($mascota->getClienteId() !== $clienteId) {
+                Menu::writeln("La mascota no pertenece al cliente." . PHP_EOL);
+                return; // Salir del método si no pertenece al cliente
+            }
                 Menu::writeln('Está por modificar la  siguiente mascota del sistema: '. PHP_EOL);
-                $mascotaModificado->mostrar();
+                $mascota->mostrar();
+
                 $rta = Menu::readln(PHP_EOL . '¿Está seguro? S/N: ');            
                 if($rta == 'S' or $rta == 's') {  
-                    Menu::writeln("Ingrese el nuevo nombre de la mascota (deje en blanco para no modificar): ");
-                    $nombre = Menu::readln("Ingrese el nombre: ");
-                    if ($nombre != ""){
-                        $mascotaModificado->setNombre($nombre);
-                    }
-                       
-                    $edad = Menu::readln("Ingrese la nueva edad de la mascota (deje en blanco para no modificar): ");
-                    if ($edad != "") {
-                       $mascotaModificado->setEdad($edad);
-                    }
-                    $raza = Menu::readln("Ingrese la nueva raza de la mascota (deje en blanco para no modificar): ");
-                    if ($raza != ""){
-                        $mascotaModificado->setRaza($raza);
-                    }
-                    $historialMedico = Menu::readln("Ingrese el nuevo historial médico de la mascota (deje en blanco para no modificar): ");
-                    if ($historialMedico !== "") {
-                       $mascotaModificado->setHistorialMedico($historialMedico);
-                    }
+                     $nombre = trim(Menu::readln("Ingrese el nuevo nombre de la mascota (deje en blanco para no modificar): "));
+                     if ($nombre != ""){
+                         $mascota->setNombre($nombre);
+                        }
+               
+                      $edad = trim(Menu::readln("Ingrese la nueva edad de la mascota (deje en blanco para no modificar): "));
+                      if ($edad != "" && is_numeric($edad)) {
+                         $mascota->setEdad((int)$edad); // Asegúrate que sea un número entero
+                        }
+            
+                      $raza = trim(Menu::readln("Ingrese la nueva raza de la mascota (deje en blanco para no modificar): "));
+                       if ($raza != ""){
+                         $mascota->setRaza($raza);
+                        }
+            
+                      $historialMedico = trim(Menu::readln("Ingrese el nuevo historial médico de la mascota (deje en blanco para no modificar): "));
+                       if ($historialMedico !== "") {
+                         $mascota->setHistorialMedico($historialMedico);
+                        }
     
-                //Lo modifica en la Base de Datos
-                $mascotaModificado->modificar();
-                $rta = Menu::readln("La mascota fue modificada con éxito");
-               } else {
-                    Menu::writeln("El id ingresado no se encuentra entre nuestras mascotas");
-            }
+                      //Lo modifica en la Base de Datos
+                       $mascota->modificar();
+                      Menu::readln("La mascota fue modificada con éxito");
+                    } else {
+                     Menu::writeln("Operacion cancelada.");
         }
     }
+    */
+            
 
     // Método para eliminar una mascota
     public function baja() {
@@ -173,5 +180,75 @@ class MascotaManager extends arrayIdManager{ //la clase puede manejar un arreglo
 
          Menu::waitForEnter(); // Esperar a que el usuario presione Enter antes de continuar
     }
+
+
+    public function modificar2() {
+        // Obtener las mascotas asociadas al cliente
+      $mascotas = $this->getArreglo(); // debe devolver las mascotas
+         if (empty($mascotas)) {
+         echo "Este cliente no tiene mascotas para modificar, intente de nuevo." . PHP_EOL;
+         return; // Salir si no hay mascotas
+        }
+
+         Menu::cls(); // Limpiar la pantalla si es necesario
+         Menu::subtitulo('Lista de mascotas del cliente para modificar: ' . htmlspecialchars($this->cliente->getNombre()));
     
+         foreach ($mascotas as $mascota) {
+             $mascota->mostrar(); // Llama al método mostrar() de cada mascota
+            }
+
+         Menu::waitForEnter(); // Esperar a que el usuario presione Enter antes de continuar
+
+         $idMascota = Menu::readln("Ingrese ID de la mascota a modificar: ");
+         
+         $mascotaEncontrada = null;
+         foreach($mascotas as $mascota) {
+            if ($mascota->getId() == $idMascota) {
+                $mascotaEncontrada = $mascota;
+                break;
+            }
+         }
+         
+         if (!$mascotaEncontrada) {
+            echo ("No se encontro una mascota con ese ID para este cliente. Intente de nuevo" . PHP_EOL);
+         }
+
+             Menu::writeln('Está por modificar la  siguiente mascota del sistema: '. PHP_EOL);
+             $mascotaEncontrada->mostrar();
+             $rta = Menu::readln(PHP_EOL . '¿Está seguro? S/N: ');            
+             if($rta == 'S' or $rta == 's') {  
+
+                  $nombre = trim(Menu::readln("Ingrese el nuevo nombre de la mascota (deje en blanco para no modificar): "));
+                  if ($nombre != ""){
+                      $mascotaEncontrada->setNombre($nombre);
+                     }
+            
+                   $edad = trim(Menu::readln("Ingrese la nueva edad de la mascota (deje en blanco para no modificar): "));
+                   if ($edad != "" && is_numeric($edad)) {
+                      $mascotaEncontrada->setEdad((int)$edad); // número entero tiene que ser
+                     }
+         
+                   $raza = trim(Menu::readln("Ingrese la nueva raza de la mascota (deje en blanco para no modificar): "));
+                    if ($raza != ""){
+                      $mascotaEncontrada->setRaza($raza);
+                     }
+         
+                   $historialMedico = trim(Menu::readln("Ingrese el nuevo historial médico de la mascota (deje en blanco para no modificar): "));
+                    if ($historialMedico !== "") {
+                      $mascotaEncontrada->setHistorialMedico($historialMedico);
+                     }
+ 
+                   //Lo modifica en la Base de Datos
+            
+            if ($this->modificar($mascotaEncontrada)) {
+                echo "La mascota se ha modificado con éxito." . PHP_EOL;
+                return true;
+            } else {
+                echo "Hubo un error al modificar la mascota." . PHP_EOL;
+                return false;
+            }
+            Menu::waitForEnter();
+        }
+    }
+
 }

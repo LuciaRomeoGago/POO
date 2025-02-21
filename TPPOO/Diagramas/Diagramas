@@ -3,22 +3,23 @@
     -arreglo: array
     +getArreglo(): array
     +agregar(elemento: Elemento): void
-    +existeId(id: int): bool
-    +eliminarPorId(id: int): void
-    +getPorId(id: int): Elemento or null
-    +modificar(elementoModificado: Elemento): void
+    +existeId(id: string): bool
+    +eliminarPorId(id: string): void
+    +getPorId(id: string): Elemento or null
     +mostrar(): void (abstract)
   }
 
   class Cliente {
     -nombre: string
-    -dni: int
-    -id: int
+    -dni: string
+    -id: string
     -referenciaAnimal: array
-    +__construct(nombre: string, dni: int, referenciaAnimal: array): void
+    +__construct(nombre: string, dni: string, id: string): void
     +getNombre(): string
-    +getDni(): int
-    +getId(): int
+    +getDni(): string
+    +getId(): string
+    +agregarMascota(mascota: Mascota): void
+    +getReferenciaAnimal(): array
   }
 
   class Mascota {
@@ -26,39 +27,41 @@
     -raza: string
     -edad: int
     -historialMedico: string
-    -id: int
-    -clienteId: int 
-    +__construct(nombre: string, raza: string, edad: int, historialMedico: string): void
+    -id: string
+    -clienteId: string
+    +__construct(nombre: string, edad: int, raza: string, historialMedico: string, id: string): void
     +getNombre(): string
-    +getId(): int
+    +getId(): string
+    +setClienteId(clienteId: string): void
   }
 
   class Veterinario {
     -nombre: string
     -especialidad: string
-    -id: int
-    +__construct(nombre: string, especialidad: string): void
+    -id: string
+    +__construct(nombre: string, especialidad: string, id: string): void
+    +getId(): string
   }
 
   class ClienteManager {
       +alta(): void
       +baja(): void
-      +modificar(): void
-      +mostrar(): void 
+      +modificarCliente(): void
+      +mostrar(): void
   }
 
   class MascotaManager {
       +alta(): void
       +baja(): void
-      +modificar(): void 
-      +mostrar(): void 
+      +modificar(clienteId: string): void
+      +mostrar(): void
   }
 
   class VeterinarioManager {
-      +alta(): void 
-      +baja(): void 
-      +modificar(): void 
-      +mostrar(): void 
+      +alta(): void
+      +baja(): void
+      +modificar(): void
+      +mostrar(): void
   }
 
   interface ABMinterface {
@@ -68,9 +71,9 @@
       +modificacion()
   }
 
-  ArrayIdManager <|-- ClienteManager 
-  ArrayIdManager <|-- MascotaManager 
-  ArrayIdManager <|-- VeterinarioManager 
+  ArrayIdManager <|-- ClienteManager
+  ArrayIdManager <|-- MascotaManager
+  ArrayIdManager <|-- VeterinarioManager
 
-  Cliente --|> Mascota // Relación de asociación (un cliente puede tener varias mascotas)
-  */
+  Cliente "1" -- "0..*" Mascota : owns // One Cliente owns zero or more Mascota objects
+*/

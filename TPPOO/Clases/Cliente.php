@@ -3,7 +3,7 @@
         private $nombre;
         private $dni;
         private $id; 
-        private $referenciaAnimal; 
+        private $referenciaAnimal = []; 
 
         public function __construct($nombre,$dni, $id = null){
             $this->nombre=$nombre;
@@ -25,9 +25,6 @@
             return $this->id;
         }
 
-        public function getReferenciaAnimal(){
-            return $this->referenciaAnimal;
-        }
 
         // Setters, permiten modificar las propiedades, algunas retornan $this para permitir encadenar llamadas
 
@@ -55,6 +52,11 @@
         public function agregarMascota(Mascota $mascota) {
             $mascota->setClienteId($this->getId()); 
           $this->referenciaAnimal[] = $mascota; 
+        }
+
+
+        public function getReferenciaAnimal(){
+            return $this->referenciaAnimal;
         }
 
         // Mostrar todas las mascotas del cliente, verifica si hay mascotas y las imprime con el metodo mostrar() de c/mascota

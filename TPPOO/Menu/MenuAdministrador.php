@@ -67,7 +67,7 @@ class MenuAdmin extends Menu {
 
         $opciones[3][0] = 3;
         $opciones[3][1] = "Modificar mascota";
-        $opciones[3][2] = array($mascotaManager, "modificar");
+        $opciones[3][2] =  array ($mascotaManager, "modificar2");
 
 		$opciones[4][0] = 4;
 		$opciones[4][1] = "Mostrar todas las mascotas";
@@ -87,7 +87,8 @@ class MenuAdmin extends Menu {
         }
 
 		// Obtener el veterinario correspondiente
-		$veterinarioSeleccionado = 	$this -> veterinarioManager -> getPorId($idVeterinario); 
+		$veterinarioSeleccionado = 	$this->veterinarioManager->getPorId($idVeterinario);
+        $veterinarioManager= new VeterinarioManager($veterinarioSeleccionado); 
 
 		$titulo = "Menu administrativo de veterinario para: " . htmlspecialchars($veterinarioSeleccionado->getNombre());
         
