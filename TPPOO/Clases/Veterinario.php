@@ -107,4 +107,40 @@ class Veterinario {
         }
         return false; 
     }
+
+    // busca un veterinario por su ID en la base de datos, esta harcodeado lo del a db, podria cambiarlo
+    public static function buscarPorId($veterinarioId) {
+        $host = 'sql10.freesqldatabase.com';      
+        $dbname = 'sql10763804';   
+        $usuario = 'sql10763804';      
+        $contrasena = 'YW49tuyKvg';      
+    
+        try {
+            // Crear la conexión PDO
+            $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $usuario, $contrasena);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+            // Preparar la consulta
+            $stmt = $pdo->prepare("SELECT id, nombre, especialidad FROM Veterinario WHERE id = :id");
+            $stmt->execute([':id' => $veterinarioId]);
+    
+            // Recuperar los datos del cliente
+            $veterinarioData = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            // Si existen datos del cliente, proceder a crear el objeto Cliente
+            if ($veterinarioData) {
+                $veterinario = new Veterinario($veterinarioData['id'], $veterinarioData['nombre'], $veterinarioData['especialidad']);
+    
+                return $veterinario;
+            } else {
+                // Si no se encontró el cliente, devolver null
+                return null;
+            }
+            
+        } catch (PDOException $e) {
+            // Manejar errores de conexión o ejecución de la consulta
+            error_log("Error en buscarPorId: " . $e->getMessage()); // Registrar el error
+            return null; 
+        }
+    }
 }

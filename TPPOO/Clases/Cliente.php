@@ -46,7 +46,7 @@
         }
 
 
-        //Metodos
+
 
         // Agregar una mascota, establece el id de cliente, y permite agregar una instancia de mascota a este
         public function agregarMascota(Mascota $mascota) {
@@ -166,9 +166,9 @@
         // busca un cliente por su ID en la base de datos, esta harcodeado lo del a db, podria cambiarlo
         public static function buscarPorId($clienteId) {
             $host = 'sql10.freesqldatabase.com';      
-            $dbname = 'sql10763804';   
-            $usuario = 'sql10763804';      
-            $contrasena = 'YW49tuyKvg';      
+            $dbname = 'sql10765943';   
+            $usuario = 'sql10765943';      
+            $contrasena = 'AbhRJRrHgP';      
         
             try {
                 // Crear la conexión PDO

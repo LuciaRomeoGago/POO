@@ -229,36 +229,36 @@
                 // Inicializa la consulta SQL y un array para los parámetros
                 $sql = "UPDATE Mascota SET ";
                 $params = [];
-                
+                $updates = []; // Para rastrear qué campos se están actualizando
+        
                 // Verifica y agrega cada campo si ha sido modificado
                 if (!empty($mascota->getNombre())) {
-                    $sql .= "nombre = :nombre, ";
-                    $params[':nombre'] = $mascota->getNombre();
+                    $updates[] = "nombre = :nombre";
+                    $params[':nombre'] = htmlspecialchars($mascota->getNombre()); // Sanitización básica
                 }
-                
+        
                 if (!empty($mascota->getEdad())) {
-                    $sql .= "edad = :edad, ";
+                    $updates[] = "edad = :edad";
                     $params[':edad'] = $mascota->getEdad();
                 }
-                
+        
                 if (!empty($mascota->getRaza())) {
-                    $sql .= "raza = :raza, ";
-                    $params[':raza'] = $mascota->getRaza();
+                    $updates[] = "raza = :raza";
+                    $params[':raza'] = htmlspecialchars($mascota->getRaza()); // Sanitización básica
                 }
-                
+        
                 if (!empty($mascota->getHistorialMedico())) {
-                    $sql .= "historialMedico = :historialMedico, ";
-                    $params[':historialMedico'] = $mascota->getHistorialMedico();
+                    $updates[] = "historialMedico = :historialMedico";
+                    $params[':historialMedico'] = htmlspecialchars($mascota->getHistorialMedico()); // Sanitización básica
                 }
         
                 // Verifica si hay campos para actualizar
-                if (empty($params)) {
-                    echo "No hay cambios para guardar.";
-                    return false;
+                if (empty($updates)) {
+                    return ['success' => false, 'message' => "No hay cambios para guardar."];
                 }
         
-                // Elimina la última coma y espacio
-                $sql = rtrim($sql, ', ');
+                // Une los campos a actualizar
+                $sql .= implode(', ', $updates);
         
                 // Agrega la cláusula WHERE
                 $sql .= " WHERE id = :id";
@@ -266,31 +266,24 @@
         
                 // Prepara la declaración
                 $stmt = Conexion::prepare($sql);
-                
-                // Asocia los parámetros
-                foreach ($params as $key => &$value) {
-                    $stmt->bindParam($key, $value);
-                }
         
                 // Ejecuta la consulta
-                if ($stmt->execute()) { 
-                    echo "Mascota modificada exitosamente."; 
-                    return true; 
-                } else { 
-                    echo "No se pudo modificar la mascota."; 
-                    return false; 
+                if ($stmt->execute($params)) {
+                    return ['success' => true, 'message' => "Mascota modificada exitosamente."];
+                } else {
+                    return ['success' => false, 'message' => "No se pudo modificar la mascota.", 'errorInfo' => $stmt->errorInfo()];
                 }
         
             } catch (PDOException $e) {
-                echo "Error al modificar la mascota: " . $e->getMessage();
-                return false; // Retorna false en caso de error
+                return ['success' => false, 'message' => "Error al modificar la mascota: " . $e->getMessage()];
             }
         }
         
         
         
+        
 
-        //Para obtener las mascotas asociadas a un cliente especifico, tmb esta hardcodeado la db
+        //Para obtener las mascotas asociadas a un cliente especifico
         public static function getMascotasByClienteId($clienteId) {
             try {
                 // Obtener la conexión reutilizable

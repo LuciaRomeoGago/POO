@@ -4,13 +4,15 @@ require_once('clases' . DIRECTORY_SEPARATOR . 'Cliente.php');
 require_once('Lib' . DIRECTORY_SEPARATOR . 'interface.php');
 
 class VeterinarioManager extends ArrayIdManager{
+	
 
 	// recupera todos los veterinarios de la db
     public function levantar() {
         try {
-            $sql = "select * 
-			        from Veterinario";
-            $veterinarios = Conexion::query($sql);
+            $sql = "SELECT * FROM Veterinario";
+            $stmt = Conexion::prepare($sql);
+			$stmt->execute();
+			$veterinarios= $stmt->fetchAll(PDO::FETCH_ASSOC);
 
            /* foreach ($veterinarios as $veterinario) {
                 // Crear el objeto Veterinario y agregarlo al arreglo
@@ -26,19 +28,36 @@ class VeterinarioManager extends ArrayIdManager{
         } catch (PDOException $e) {
             echo "Error al levantar veterinarios: " . htmlspecialchars($e->getMessage());
         }*/
-		  // Verificar si se obtuvieron resultados
-		  if ($veterinarios === false || empty($veterinario)) {
-			echo "No se encontraron clientes en la base de datos." . PHP_EOL;
-			return; // Salir del método si no hay clientes
+		 /* // Verificar si se obtuvieron resultados
+		  if (empty($veterinarios)) {
+            echo "No se encontraron veterinarios en la base de datos." . PHP_EOL;
+            return; // Salir del método si no hay veterinarios
 		   }
-
+*/
 			foreach ($veterinarios as $veterinario) {
 				if (!array_key_exists('id', $veterinario)) {
-					echo "Advertencia: No se encontró la clave 'id' para un cliente." . PHP_EOL;
+					echo "Advertencia: No se encontró la clave 'id' para un veterinario." . PHP_EOL;
 					continue;
 				   }
+
+				   $nombre = $veterinario['nombre'];
+				   $especialidad=$veterinario['especialidad'];
+				   $id=$veterinario['id'];
+
+				   $nuevoVeterinario= new Veterinario(
+					$nombre,
+					$especialidad,
+					$id
+				   );
+
+				   $this->agregar($nuevoVeterinario);
+				}
+			}catch (PDOException $e){
+					echo "error al levantar veterinarios: ".htmlspecialchars($e->getMessage());
+				}
+	}
 		
-				// Crear el objeto Veterinario y agregarlo al arreglo
+				/*// Crear el objeto Veterinario y agregarlo al arreglo
 				  $nuevoVeterinario = new Veterinario(
 					$veterinario['nombre'],
 					$veterinario['especialidad'],
@@ -50,7 +69,9 @@ class VeterinarioManager extends ArrayIdManager{
 			  } } catch (PDOException $e) {
 				echo "Error al levantar veterinarios: " . htmlspecialchars($e->getMessage());
 			   }
-    }
+    }*/
+
+	
 
 	// permite ingresar detalles de un nuevo veterinario
     public function alta() {
@@ -71,6 +92,8 @@ class VeterinarioManager extends ArrayIdManager{
             return false;
         }
     }
+
+
 
 	// elimina un veterinario existente
     public function baja() {

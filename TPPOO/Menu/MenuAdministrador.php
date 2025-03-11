@@ -88,7 +88,7 @@ class MenuAdmin extends Menu {
 
 		// Obtener el veterinario correspondiente
 		$veterinarioSeleccionado = 	$this->veterinarioManager->getPorId($idVeterinario);
-        $veterinarioManager= new VeterinarioManager($veterinarioSeleccionado); 
+        $clienteManager= new ClienteManager($veterinarioSeleccionado); 
 
 		$titulo = "Menu administrativo de veterinario para: " . htmlspecialchars($veterinarioSeleccionado->getNombre());
         
