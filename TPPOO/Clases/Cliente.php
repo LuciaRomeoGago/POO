@@ -166,9 +166,9 @@
         // busca un cliente por su ID en la base de datos, esta harcodeado lo del a db, podria cambiarlo
         public static function buscarPorId($clienteId) {
             $host = 'sql10.freesqldatabase.com';      
-            $dbname = 'sql10765943';   
-            $usuario = 'sql10765943';      
-            $contrasena = 'AbhRJRrHgP';      
+            $dbname = 'sql10767142';   
+            $usuario = 'sql10767142';      
+            $contrasena = 'gVBCGjW1WY';      
         
             try {
                 // Crear la conexión PDO

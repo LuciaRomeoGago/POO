@@ -113,9 +113,9 @@
         private function __construct() {
             // Configuración de la conexión a la base de datos MySQL
             $servername = "sql10.freesqldatabase.com";
-            $database = "sql10765943";
-            $username = "sql10765943";
-            $password = "AbhRJRrHgP";
+            $database = "sql10767142";
+            $username = "sql10767142";
+            $password = "gVBCGjW1WY";
     
             try {
                 // Crear una instancia de PDO para conexión a MySQL

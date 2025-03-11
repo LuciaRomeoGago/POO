@@ -266,6 +266,7 @@ class MascotaManager extends arrayIdManager{ //la clase puede manejar un arreglo
                }
                Menu::waitForEnter();
            }
+        }
         /* $idMascota = Menu::readln("Ingrese ID de la mascota a modificar: ");
          
          $mascotaEncontrada = null;
@@ -343,7 +344,6 @@ class MascotaManager extends arrayIdManager{ //la clase puede manejar un arreglo
             }
             Menu::waitForEnter();
         } */
-    }
 /* while (true) {
  $idMascota = Menu::readln("Ingrese ID de la mascota a modificar: ");
          
