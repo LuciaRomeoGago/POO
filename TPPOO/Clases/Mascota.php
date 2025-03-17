@@ -42,6 +42,45 @@
             return $this->historialMedico;
         }
 
+            //Para obtener las mascotas asociadas a un cliente especifico
+            public static function getMascotasPorClienteId($clienteId) {
+                try {
+                    // Obtener la conexión reutilizable
+                    $pdo = Conexion::getConexion();
+            
+                    // Preparar la consulta
+                    $stmt = $pdo->prepare("SELECT id, nombre, edad, raza, historialMedico 
+                                           FROM Mascota 
+                                           WHERE clienteId = :clienteId");
+                    // Ejecutar la consulta
+                    $stmt->execute([':clienteId' => $clienteId]);
+            
+                    // Obtener todas las mascotas
+                    $mascotasData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+                    $mascotas = [];
+                    // Crear objetos de tipo Mascota a partir de los resultados
+                    foreach ($mascotasData as $mascotaData) {
+                        $mascota = new Mascota(
+                            $mascotaData['nombre'],
+                            $mascotaData['edad'],
+                            $mascotaData['raza'],
+                            $mascotaData['historialMedico'],
+                            $mascotaData['id']
+                        );
+                        $mascotas[] = $mascota;
+                    }
+            
+                    return $mascotas;
+            
+                } catch (PDOException $e) {
+                    // Manejar errores de conexión o consulta
+                    error_log("Error en getMascotasByClienteId: " . $e->getMessage());
+                    return []; // Retorna un arreglo vacío en caso de error
+                }
+            }
+            
+
         //Setters, establece el valor de la propiedad
 
 
@@ -222,7 +261,7 @@
                 echo "Error al modificar la mascota: " . $e->getMessage();
                 return false; // Retorna false en caso de error
             }
-        }*/
+    }
 
         public function modificar(Mascota $mascota) {
             try {
@@ -278,48 +317,39 @@
                 return ['success' => false, 'message' => "Error al modificar la mascota: " . $e->getMessage()];
             }
         }
-        
-        
+     */
+       
+     public function modificar(Mascota $mascota) {
+        try {
+            // Inicializa la consulta SQL y un array para los parámetros
+            $sql = "UPDATE Mascota SET nombre = :nombre, edad = :edad, raza = :raza, historialMedico = :historialMedico
+                    WHERE id = :id";
+            $stmt = Conexion::prepare($sql);
+    
+            // Asocia los parámetros
+            $stmt->bindParam(':id', $mascota->getId());
+            $stmt->bindParam(':nombre', $mascota->getNombre());
+            $stmt->bindParam(':edad', $mascota->getEdad());
+            $stmt->bindParam(':raza', $mascota->getRaza());
+            $stmt->bindParam(':historialMedico', $mascota->getHistorialMedico());
+    
+            if ($stmt->execute()) { 
+                echo "La mascota se ha modificado exitosamente."; 
+                return true; 
+            } else { 
+                echo "No se pudo modificar la mascota."; 
+                return false; 
+            }
+        } catch (PDOException $e) {
+            echo "Error al modificar la mascota: " . $e->getMessage();
+        }
+        return false;
+    }
+    
+    
         
         
 
-        //Para obtener las mascotas asociadas a un cliente especifico
-        public static function getMascotasByClienteId($clienteId) {
-            try {
-                // Obtener la conexión reutilizable
-                $pdo = Conexion::getConexion();
-        
-                // Preparar la consulta
-                $stmt = $pdo->prepare("SELECT id, nombre, edad, raza, historialMedico 
-                                       FROM Mascota 
-                                       WHERE clienteId = :clienteId");
-                // Ejecutar la consulta
-                $stmt->execute([':clienteId' => $clienteId]);
-        
-                // Obtener todas las mascotas
-                $mascotasData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-                $mascotas = [];
-                // Crear objetos de tipo Mascota a partir de los resultados
-                foreach ($mascotasData as $mascotaData) {
-                    $mascota = new Mascota(
-                        $mascotaData['nombre'],
-                        $mascotaData['edad'],
-                        $mascotaData['raza'],
-                        $mascotaData['historialMedico'],
-                        $mascotaData['id']
-                    );
-                    $mascotas[] = $mascota;
-                }
-        
-                return $mascotas;
-        
-            } catch (PDOException $e) {
-                // Manejar errores de conexión o consulta
-                error_log("Error en getMascotasByClienteId: " . $e->getMessage());
-                return []; // Retorna un arreglo vacío en caso de error
-            }
-        }
-        
+      
 
     }

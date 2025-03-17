@@ -6,7 +6,7 @@ require_once('Lib' . DIRECTORY_SEPARATOR . 'arrayIdManager.php');
 require_once('Lib' . DIRECTORY_SEPARATOR . 'interface.php');
 
 class Menu {
-    
+    protected $salir = false;
     private static $lineasPorPagina = 10;   
     
     public function __construct() {
@@ -67,7 +67,11 @@ class Menu {
    }
 
    protected function exit(){
-       return 1;   
+       $this->salir = true;   
+   }
+
+   public function getSalir(){
+    return $this->salir;
    }
 
    // Opciones es una matriz, en cada fila el array opción tiene el número de la opción, nombre de la opción y la función
@@ -97,6 +101,9 @@ class Menu {
                } 
             } else {
                 self::writeln("Opción inválida");
+            }
+            if ($this->getSalir()) {
+                break;
             }
         }
     }

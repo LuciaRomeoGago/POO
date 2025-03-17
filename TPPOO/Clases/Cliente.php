@@ -4,6 +4,7 @@
         private $dni;
         private $id; 
         private $referenciaAnimal = []; 
+        private $inventario = [];
 
         public function __construct($nombre,$dni, $id = null){
             $this->nombre=$nombre;
@@ -25,6 +26,13 @@
             return $this->id;
         }
 
+        public function getReferenciaAnimal(){
+            return $this->referenciaAnimal;
+        }
+
+        public function getInventario(){
+            return $this->inventario;
+        }
 
         // Setters, permiten modificar las propiedades, algunas retornan $this para permitir encadenar llamadas
 
@@ -45,6 +53,9 @@
             $this->referenciaAnimal = $mascotas;
         }
 
+        public function setInventario($inventario) {
+            $this->inventario = $inventario;
+        }
 
 
 
@@ -54,10 +65,7 @@
           $this->referenciaAnimal[] = $mascota; 
         }
 
-
-        public function getReferenciaAnimal(){
-            return $this->referenciaAnimal;
-        }
+   
 
         // Mostrar todas las mascotas del cliente, verifica si hay mascotas y las imprime con el metodo mostrar() de c/mascota
         public function mostrarMascotas() {
@@ -75,8 +83,9 @@
 
         //Muestra por pantalla un cliente y llama para mostrar sus mascotas
         public function mostrar(){
-        echo "Dni: " . $this->getDni() 
+        echo "Id: " . $this->getId() 
             . ", Nombre: " . $this->getNombre() 
+            . ", Dni: " . $this->getDni() 
             . PHP_EOL;
             $this->mostrarMascotas(); 
         }
@@ -93,14 +102,16 @@
              $stmt->bindParam(':dni', $this->dni);
              $stmt->bindParam(':id', $this->id);
             
-               if ($stmt->execute()) {
+              /* if ($stmt->execute()) {
                  foreach ($this->referenciaAnimal as $mascota) {
                       // Asignar el ID del cliente a la mascota antes de guardarla
                      $mascota->setClienteId($this->getId()); 
                      $mascota->guardar(); // Guarda cada mascota en la base de datos
                     }
                  return true;
-                }
+                }*/
+                return $stmt->execute();
+        
             } catch (PDOException $e) {
                  echo "Error al guardar cliente: " . htmlspecialchars($e->getMessage());
                 }
@@ -136,8 +147,13 @@
 
 
         // Modifica al Cliente en la base de datos
-        public function modificar() {
+       /* public function modificar() {
           try {  
+
+                   // Imprimir los valores de las propiedades antes de ejecutar la consulta SQL
+        echo "Nombre: " . htmlspecialchars($this->nombre) . PHP_EOL;
+        echo "ID: " . htmlspecialchars($this->id) . PHP_EOL;
+
             //prepara la consulta SQL
             $sql = "UPDATE Cliente SET nombre = :nombre
                     WHERE id = :id";
@@ -150,6 +166,10 @@
            $stmt->bindParam(':id', $this->id);
 
             if ($stmt->execute()) { 
+
+                  // Imprimir el número de filas afectadas por la consulta SQL
+            echo "Número de filas afectadas: " . htmlspecialchars($stmt->rowCount()) . PHP_EOL;
+
                 echo "Cliente modificado exitosamente."; 
                 return true; 
             } else { 
@@ -161,7 +181,53 @@
             echo "Error al modificar cliente: " . $e->getMessage();
             }
             return false;
-        } 
+        }*/
+        
+        public function modificar($campos) {
+            try {
+                // Imprimir los valores de las propiedades antes de ejecutar la consulta SQL
+                echo "Nombre: " . htmlspecialchars($this->nombre) . PHP_EOL;
+                echo "ID: " . htmlspecialchars($this->id) . PHP_EOL;
+                
+                // Construir dinámicamente la consulta SQL
+                $setClause = [];
+                foreach ($campos as $campo => $valor) {
+                    $setClause[] = "$campo = :$campo";
+                }
+                $setClause = implode(", ", $setClause);
+        
+                // Consulta SQL dinámica
+                $sql = "UPDATE Cliente SET $setClause WHERE id = :id";
+        
+                // Imprimir la consulta SQL antes de ejecutarla
+                echo "Consulta SQL: " . htmlspecialchars($sql) . PHP_EOL;
+        
+                // Prepara la declaración
+                $stmt = Conexion::prepare($sql);
+        
+                // Asociar los parámetros
+                foreach ($campos as $campo => &$valor) {
+                    $stmt->bindParam(":$campo", $valor);
+                }
+                $stmt->bindParam(':id', $this->id);
+        
+                if ($stmt->execute()) {
+                    // Imprimir el número de filas afectadas por la consulta SQL
+                    echo "Número de filas afectadas: " . htmlspecialchars($stmt->rowCount()) . PHP_EOL;
+                    
+                    echo "Cliente modificado exitosamente.";
+                    return true;
+                } else {
+                    echo "No se pudo modificar el cliente.";
+                    return false;
+                }
+        
+            } catch (PDOException $e) {
+                echo "Error al modificar cliente: " . htmlspecialchars($e->getMessage());
+            }
+            return false;
+        }
+        
 
         // busca un cliente por su ID en la base de datos, esta harcodeado lo del a db, podria cambiarlo
         public static function buscarPorId($clienteId) {
@@ -187,7 +253,7 @@
                     $cliente = new Cliente($clienteData['nombre'], $clienteData['dni'], $clienteData['id']);
         
                     // Asignar las mascotas del cliente utilizando el método estático de la clase Mascota
-                    $cliente->setMascotas(Mascota::getMascotasByClienteId($cliente->getId()));
+                    $cliente->setMascotas(Mascota::getMascotasPorClienteId($cliente->getId()));
         
                     return $cliente;
                 } else {

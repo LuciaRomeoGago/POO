@@ -122,6 +122,8 @@ class Veterinario {
     
             // Preparar la consulta
             $stmt = $pdo->prepare("SELECT id, nombre, especialidad FROM Veterinario WHERE id = :id");
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            echo "<script>console.log('Resultado: " . json_encode($resultado) . "');</script>";
             $stmt->execute([':id' => $veterinarioId]);
     
             // Recuperar los datos del cliente
