@@ -90,19 +90,21 @@ class ClienteManager extends arrayIdManager
                 $historialMedico = Menu::readln("Ingrese el historial médico de la mascota: ");
 
                 // Crea el nuevo objeto Mascota
-                $mascotaManager = new MascotaManager($cliente);
-                if ($mascotaManager->agregarMascota($nombreMascota, $edad, $raza, $historialMedico)) {
-                    echo "La mascota se ha agregado exitosamente." . PHP_EOL;
-                } else {
-                    echo "Error al agregar la mascota." . PHP_EOL;
-                }
+                $mascota = new Mascota($nombreMascota, $edad, $raza, $historialMedico);
+                $mascota->setClienteId($cliente->getId()); // Asigna el ID del cliente a la mascota
+                $mascota->guardar();
+                // Agrega la mascota al cliente
+                $cliente->agregarMascota($mascota);
+
+                // Mensaje de confirmación
+                echo "La mascota se ha agregado exitosamente." . PHP_EOL;
             }
+
             echo "El cliente se ha creado con éxito." . PHP_EOL;
         } else {
             echo "Error al crear el cliente." . PHP_EOL;
         }
     }
-
 
     //Dar de baja(elimina) un cliente, se pide el id del cliente a eliminar. Se elimina de la base de datos y del arreglo
     public function baja()
