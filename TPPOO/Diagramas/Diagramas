@@ -1,79 +1,174 @@
-/*classDiagram
-  class ArrayIdManager {
-    -arreglo: array
+/*
+class Cliente {
+    - nombre: string
+    - dni: int
+    - id: string
+    - referenciaAnimal: Mascota[]
+    - inventario: mixed[]
+
+    + __construct(nombre: string, dni: int, id: string = null)
+    + getNombre(): string
+    + getDni(): int
+    + getId(): string
+    + getReferenciaAnimal(): Mascota[]
+    + getInventario(): mixed[]
+    + setNombre(nombre: string): void
+    + setDni(dni: int): Cliente
+    + setId(id: string): void
+    + setMascotas(mascotas: Mascota[]): void
+    + setInventario(inventario: mixed[]): void
+    + agregarMascota(mascota: Mascota): void
+    + mostrarMascotas(): void
+    + mostrar(): void
+    + guardar(): bool
+    + borrar(): bool
+    + modificar(campos: mixed[]): bool
+    + static buscarPorId(clienteId: string): Cliente
+}
+
+class Mascota {
+    +setClienteId(clienteId: string): void
+    +mostrar(): void
+    +guardar(): bool
+    +borrar(): bool
+    +static getMascotasPorClienteId(clienteId: string): Mascota[]
+}
+
+class Producto {
+    -id: string
+    -nombre: string
+    -precio: float
+    -stock: int
+
+    +__construct(id: string, nombre: string, precio: float, stock: int)
+    +getId(): string
+    +getNombre(): string
+    +getPrecio(): float
+    +getStock(): int
+    +setId(id: string): void
+    +setNombre(nombre: string): void
+    +setPrecio(precio: float): void
+    +setStock(stock: int): void
+    +guardar(): bool
+    +borrar(): bool
+    +modificar(): bool
+    +hayStockDisponible(): bool
+    +restarStock(cantidad: int): bool
+    +mostrar(): void
+    +static mostrarTodosProductos(): Producto[]
+    +static buscarPorId(id: string): Producto
+}
+
+class Inventario {
+    +static agregarProducto(clienteId: string, productoId: string, cantidad: int): bool
+    +static eliminarProducto(clienteId: string, productoId: string): bool
+    +static obtenerInventario(clienteId: string): mixed[]
+}
+
+class Veterinario {
+    - nombre: string
+    - especialidad: string
+    - id: string
+
+    + __construct(nombre: string, especialidad: string, id: string = null)
+    + getNombre(): string
+    + getEspecialidad(): string
+    + getId(): string
+    + setNombre(nombre: string): void
+    + setEspecialidad(especialidad: string): void
+    + setId(id: string): void
+    + mostrar(): void
+    + guardar(): bool
+    + borrar(): bool
+    + modificar(): bool
+    + static buscarPorId(veterinarioId: string): Veterinario
+}
+
+class ClienteManager {
+    -arreglo: Cliente[]
+
+    +__construct()
+    +levantar(): void
+    +alta(): void
+    +baja(): void
+    +modificarCliente(): void
+    +mostrar(): void
+    +agregar(cliente: Cliente): void
+    +eliminarPorId(id: string): void
+    +existeId(id: string): bool
+    +getPorId(id: string): Cliente
+    +getArreglo(): Cliente[]
+}
+
+class VeterinarioManager {
+    -arreglo: Veterinario[]
+
+    +__construct()
+    +levantar(): void
+    +alta(): void
+    +baja(): void
+    +modificar(elementoModificado: Veterinario): void
+    +mostrar(): void
+    +altaMascota(): void
+    +mostrarMascota(): void
+    +agregar(veterinario: Veterinario): void
+    +eliminarPorId(id: string): void
+    +existeId(id: string): bool
+    +getPorId(id: string): Veterinario
+    +getArreglo(): Veterinario[]
+}
+
+class Conexion {
+    private static $db: PDO
+
+    -__construct()
+    +getConexion(): PDO
+    +query(sql: string): mixed[]
+    +ejecutar(sql: string): bool
+    +prepare(sql: string): PDOStatement
+    +getLastId(): string
+    +closeConexion(): void
+}
+
+abstract class ArrayIdManager {
+    #arreglo: array
+
     +getArreglo(): array
-    +agregar(elemento: Elemento): void
+    +agregar(elemento: mixed): void
     +existeId(id: string): bool
     +eliminarPorId(id: string): void
-    +getPorId(id: string): Elemento or null
-    +mostrar(): void (abstract)
-  }
+    +getPorId(id: string): mixed
+    +modificar(elementoModificado: mixed): void
+    +tamanio(): int
+    +{abstract} mostrar(): void
+}
 
-  class Cliente {
-    -nombre: string
-    -dni: string
-    -id: string
-    -referenciaAnimal: array
-    +__construct(nombre: string, dni: string, id: string): void
-    +getNombre(): string
-    +getDni(): string
-    +getId(): string
-    +agregarMascota(mascota: Mascota): void
-    +getReferenciaAnimal(): array
-  }
+interface ABMinterface {
+    +{abstract} levantar(): void
+    +{abstract} alta(): void
+    +{abstract} baja(): void
+    +{abstract} modificacion(): void
+}
 
-  class Mascota {
-    -nombre: string
-    -raza: string
-    -edad: int
-    -historialMedico: string
-    -id: string
-    -clienteId: string
-    +__construct(nombre: string, edad: int, raza: string, historialMedico: string, id: string): void
-    +getNombre(): string
-    +getId(): string
-    +setClienteId(clienteId: string): void
-  }
+class Menu {
+    -{static} lineasPorPagina: int
 
-  class Veterinario {
-    -nombre: string
-    -especialidad: string
-    -id: string
-    +__construct(nombre: string, especialidad: string, id: string): void
-    +getId(): string
-  }
+    +writeln(texto: string): void
+    +readln(texto: string): string
+    +{static} lineasPorPagina(): int
+    +{static} waitForEnter(): void
+    +{static} cls(): void
+    +pantallaBienvenida(nombreSistema: string): void
+    +pantallaDespedida(): void
+    +{static} subtitulo(subtitulo: string): void
+    +getSalir(): bool
+    +menu(titulo: string, opciones: array): void
+    +iniciarSistema(): void
+}
 
-  class ClienteManager {
-      +alta(): void
-      +baja(): void
-      +modificarCliente(): void
-      +mostrar(): void
-  }
-
-  class MascotaManager {
-      +alta(): void
-      +baja(): void
-      +modificar(clienteId: string): void
-      +mostrar(): void
-  }
-
-  class VeterinarioManager {
-      +alta(): void
-      +baja(): void
-      +modificar(): void
-      +mostrar(): void
-  }
-
-  interface ABMinterface {
-      +levantar()
-      +alta()
-      +baja()
-      +modificacion()
-  }
-
-  ArrayIdManager <|-- ClienteManager
-  ArrayIdManager <|-- MascotaManager
-  ArrayIdManager <|-- VeterinarioManager
-
-  Cliente "1" -- "0..*" Mascota : owns // One Cliente owns zero or more Mascota objects
+class MenuAdmin {
+    +menuPrincipal(): void
+    +subMenuClientes(clienteManager: ClienteManager): void
+    +subMenuVeterinarios(veterinarioManager: VeterinarioManager): void
+}
 */

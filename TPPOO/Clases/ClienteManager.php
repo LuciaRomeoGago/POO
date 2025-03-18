@@ -2,6 +2,7 @@
 require_once('Clases' . DIRECTORY_SEPARATOR . 'Cliente.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'Inventario.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'Mascota.php');
+require_once('Clases' . DIRECTORY_SEPARATOR . 'MascotaManager.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'Producto.php');
 require_once('Lib' . DIRECTORY_SEPARATOR . 'arrayIdManager.php');
 require_once('Lib' . DIRECTORY_SEPARATOR . 'interface.php');
@@ -9,7 +10,6 @@ require_once('Lib' . DIRECTORY_SEPARATOR . 'interface.php');
 
 class ClienteManager extends arrayIdManager
 {
-
     public function __construct()
     {
         $this->levantar(); //llama al metodo levantar para cargar clientes desde db al crear una isntancia de clientemanager
@@ -46,7 +46,6 @@ class ClienteManager extends arrayIdManager
                     $id  // Asignar ID desde la base de datos
                 );
 
-
                 // Cargar las mascotas del cliente
                 $mascotas = Mascota::getMascotasPorClienteId($id);
                 foreach ($mascotas as $mascota) {
@@ -65,10 +64,9 @@ class ClienteManager extends arrayIdManager
         }
     }
 
-
-
     //  (crea nuevo cliente en el sistema) Guarda el cliente en la base de datos y le setea el id generado por la base de datos al insertarlo
-    public function alta()  {
+    public function alta()
+    {
 
         $nombre = Menu::readln("Ingrese el nombre y apellido del cliente: ");
         $dni = Menu::readln("Ingrese el dni del cliente: ");
@@ -92,24 +90,23 @@ class ClienteManager extends arrayIdManager
                 $historialMedico = Menu::readln("Ingrese el historial médico de la mascota: ");
 
                 // Crea el nuevo objeto Mascota
-                $mascota = new Mascota($nombreMascota, $edad, $raza, $historialMedico);
-                $mascota->setClienteId($cliente->getId()); // Asigna el ID del cliente a la mascota
-                $mascota->guardar();
-                // Agrega la mascota al cliente
-                $cliente->agregarMascota($mascota);
-
-                // Mensaje de confirmación
-                echo "La mascota se ha agregado exitosamente." . PHP_EOL;
+                $mascotaManager = new MascotaManager($cliente);
+                if ($mascotaManager->agregarMascota($nombreMascota, $edad, $raza, $historialMedico)) {
+                    echo "La mascota se ha agregado exitosamente." . PHP_EOL;
+                } else {
+                    echo "Error al agregar la mascota." . PHP_EOL;
+                }
             }
-
             echo "El cliente se ha creado con éxito." . PHP_EOL;
         } else {
             echo "Error al crear el cliente." . PHP_EOL;
         }
     }
 
+
     //Dar de baja(elimina) un cliente, se pide el id del cliente a eliminar. Se elimina de la base de datos y del arreglo
-    public function baja(){
+    public function baja()
+    {
 
         $this->mostrar();
         $id = Menu::readln("Ingrese el id cliente a eliminar:");
@@ -131,35 +128,8 @@ class ClienteManager extends arrayIdManager
     }
 
     // Actualizar los datos de un cliente existente por su ID
-    /* public function modificarCliente() {
-	    $id = Menu::readln("Ingrese Id de cliente a modificar: ");
-        if($this->existeId($id)){
-            $clienteModificado = $this->getPorId($id);         	   
-            Menu::writeln('Está por modificar al siguiente cliente del sistema: '. PHP_EOL);
-            $clienteModificado->mostrar();
-            $rta = Menu::readln(PHP_EOL . '¿Está seguro? S/N: ');            
-            if($rta == 'S' or $rta == 's') {  
-                Menu::writeln("A continuación ingrese los nuevos datos, ENTER para dejarlos sin modificar");
-                $nombre = Menu::readln("Ingrese el nombre y apellido: ");
-                if ($nombre != ""){
-                    $clienteModificado->setNombre($nombre);
-                }
-                $dni = Menu::readln("Ingrese el dni: ");
-                if ($dni != ""){
-                    $clienteModificado->setDni($dni);
-                }
-
-            //Lo modifica en la Base de Datos
-            $clienteModificado->modificar();
-            $rta = Menu::readln("El cliente fue modificado con éxito");
-           } else {
-                Menu::writeln("El id ingresado no se encuentra entre nuestros clientes");
-        }
-    }
-}*/
-
-    // Actualizar los datos de un cliente existente por su ID
-    public function modificarCliente(){
+    public function modificarCliente()
+    {
 
         $this->mostrar();
         $idOriginal = Menu::readln("Ingrese Id de cliente a modificar: ");
@@ -173,7 +143,7 @@ class ClienteManager extends arrayIdManager
             if ($rta == 'S' or $rta == 's') {
                 $campos = [];
                 Menu::writeln("A continuación ingrese los nuevos datos, ENTER para dejarlos sin modificar");
-               
+
                 $nombre = Menu::readln("Ingrese el nombre y apellido: ");
                 if ($nombre != "") {
                     $clienteModificado->setNombre($nombre);
@@ -199,10 +169,6 @@ class ClienteManager extends arrayIdManager
             Menu::writeln("El id ingresado no se encuentra entre nuestros clientes");
         }
     }
-        
-    
-
-
 
     // Mostrar por pantalla todos los clientes
     public function mostrar()

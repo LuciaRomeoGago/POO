@@ -1,15 +1,27 @@
+Cliente "1" -- "*" Mascota : referenciaAnimal
+Cliente "1" -- "1" Conexion : usa
+Cliente "1" -- "*" Inventario : usa
+Producto "1" -- "1" Conexion : usa
+Inventario -- Conexion : usa
+ClienteManager -- Cliente : maneja
+ClienteManager -- Conexion : usa
+VeterinarioManager -- Veterinario : maneja
+VeterinarioManager -- Conexion : usa
+MascotaManager -- Mascota : maneja
+MascotaManager -- Conexion : usa
+Veterinario "1" -- "1" Conexion : usa
+ArrayIdManager <|-- ClienteManager 
+ArrayIdManager <|-- VeterinarioManager
+ArrayIdManager <|-- MascotaManager
+ABMinterface <|-- ClienteManager
+ABMinterface <|-- VeterinarioManager
+ABMinterface <|-- MascotaManager
+MenuAdmin -- ClienteManager : usa
+MenuAdmin -- VeterinarioManager : usa
+MenuAdmin -- MascotaManager : usa
 
+note top of Cliente::referenciaAnimal : Array of Mascota objects
+note top of Cliente::inventario : Array of mixed type
 
-(1 ; N)  Veterinaria tiene muchos Productos.
-(1 ; 1) Un producto pertenece a una Veterinaria.
-(1 ; N) Una Veterinaria ofrece muchos Servicios.
-(1 ; 1) Un Servicio es ofrecido por una Veterinaria.
-(1 ; N) Una Veterinaria gestiona muchos Turnos.
-(1 ; 1) Un turno es gestionado por una Veterinaria.
-(1 ; N) Una Veterinaria atiende muchos Clientes.
-(1 ; 1) Un Cliente es atendido por una Veterinaria.
-(1 ; N) Un Cliente posee muchas Mascotas.
-(1 ; 1) Una Mascota es propiedad de un Cliente.
-(1 ; 1) Un Turno es solicitado por un Cliente para una Mascota.
-(1 ; N) Un Cliente puede tener muchos Turnos para sus Mascotas.
-(1 ; N) Una Mascota puede tener muchos Turnos.
+// ClienteManager, VeterinarioManager y MascotaManager son casos especificos de ArrayIdManager, esta es la base, mas general.
+// ClienteManager, VeterinarioManager y MascotaManager implemetan ABMinterface, se comprometen a proporcionar metodos de esta.

@@ -1,7 +1,7 @@
 CREATE TABLE Cliente (
     id INT(11) PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
-    dni int(11) NOT NULL UNIQUE,
+    dni int(11) NOT NULL UNIQUE
 );
 
 CREATE TABLE Mascota (

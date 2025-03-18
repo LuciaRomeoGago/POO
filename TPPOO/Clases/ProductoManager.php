@@ -70,7 +70,6 @@ class ProductoManager extends arrayIdManager{
         $producto = new Producto ($id,$nombre,$precio,$stock);
         
         if ($producto ->guardar()) {
-            echo "El producto se ha creado con exito.". PHP_EOL;
             return true;
         } else {
             echo "Hubo un error al crear el producto.". PHP_EOL;
