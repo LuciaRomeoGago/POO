@@ -54,11 +54,5 @@ abstract class ArrayIdManager
         }
     }
 
-    //Retorna la cantidad de elementos del arreglo
-    public function tamanio()
-    {
-        return  count($this->arreglo);
-    }
-
     public abstract function mostrar();
 }

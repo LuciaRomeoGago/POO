@@ -1,7 +1,11 @@
 <?php
 require_once('clases' . DIRECTORY_SEPARATOR . 'Veterinario.php');
+require_once('clases' . DIRECTORY_SEPARATOR . 'VeterinarioModelo.php');
 require_once('clases' . DIRECTORY_SEPARATOR . 'Cliente.php');
 require_once('Lib' . DIRECTORY_SEPARATOR . 'interface.php');
+
+// no utilizo esta clase en este sistema todavia, podria utilizarlo si agrandara el sistema 
+//utilizando un perfil de secretaria que me agregue los vetes al sistema y asocio a turnos 
 
 class VeterinarioManager extends ArrayIdManager
 {
@@ -13,21 +17,10 @@ class VeterinarioManager extends ArrayIdManager
 	public function levantar()
 	{
 		try {
-			$sql = "SELECT * FROM Veterinario";
-			$stmt = Conexion::prepare($sql);
-			$stmt->execute();
-			$veterinarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+			$veterinarios = VeterinarioModelo::obtenerTodos();
+	
 			foreach ($veterinarios as $veterinario) {
-				// Crear el objeto Veterinario y agregarlo al arreglo
-				$nuevoVeterinario = new Veterinario(
-					$veterinario['nombre'],
-					$veterinario['especialidad'],
-					$veterinario['id']  // Asignar ID desde la base de datos
-				);
-
-				// Agregar al arreglo gestionado por ArrayIdManager
-				$this->agregar($nuevoVeterinario);
+				$this->agregar($veterinario);
 			}
 		} catch (PDOException $e) {
 			echo "Error al levantar veterinarios: " . htmlspecialchars($e->getMessage());
@@ -47,7 +40,10 @@ class VeterinarioManager extends ArrayIdManager
 		// Crear nuevo objeto Veterinario
 		$veterinario = new Veterinario($nombre, $especialidad);
 
-		if ($veterinario->guardar()) {  // Guardar en base de datos
+		$modelo = new VeterinarioModelo();
+
+		if ($modelo->guardar($veterinario)) {  // Guardar en base de datos
+			$this->agregar($veterinario);
 			echo "Veterinario agregado con éxito." . PHP_EOL;
 			return true;
 		} else {
@@ -164,9 +160,7 @@ class VeterinarioManager extends ArrayIdManager
 	public function altaMascota()
 	{
 		$clienteId = Menu::readln("Ingrese el Id del dueño de la mascota: ");
-
-		// Buscar al cliente por DNI
-		$cliente = Cliente::buscarPorId($clienteId);
+		$cliente = ClienteModelo::buscarPorId($clienteId);
 
 		if ($cliente) {
 			$nombreMascota = Menu::readln("Ingrese el nombre de la mascota: ");
@@ -176,20 +170,18 @@ class VeterinarioManager extends ArrayIdManager
 
 			// Crea el nuevo objeto Mascota
 			$mascota = new Mascota($nombreMascota, $edad, $raza, $historialMedico);
+			$mascota->setClienteId($cliente->getId());
 
-			// Asocia la mascota al cliente
-			$cliente->agregarMascota($mascota);
+			$mascotaModelo = new MascotaModelo();
+			if ($mascotaModelo->guardar($mascota)) {
+				// Asocia la mascota al cliente
+				$cliente->agregarMascota($mascota);
 
-			// Actualiza al cliente en la base de datos (si es necesario)
-			$cliente->guardar();
-
-			// Mensaje de confirmación
-			echo "La mascota se ha agregado exitosamente al cliente con Id " . $clienteId . PHP_EOL;
+				echo "La mascota se ha agregado exitosamente al cliente con Id " . $clienteId . PHP_EOL;
+			}
 		} else {
 			echo "No se encontró ningún cliente con el Id ingresado." . PHP_EOL;
 		}
-
-		$rta = Menu::readln("Presione Enter para continuar...");
 	}
 
 
@@ -199,8 +191,9 @@ class VeterinarioManager extends ArrayIdManager
 		// Pedir al veterinario que ingrese el ID del cliente
 		$clienteId = Menu::readln("Ingrese el ID del cliente para mostrar sus mascotas: ");
 
+		$clienteModelo = new ClienteModelo();
 		// Buscar el cliente por ID
-		$cliente = Cliente::buscarPorId($clienteId);
+		$cliente = $clienteModelo->buscarPorId($clienteId);
 
 		if ($cliente === null) {
 			echo "No se encontró un cliente con el ID ingresado." . PHP_EOL;

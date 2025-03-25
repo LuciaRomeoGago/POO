@@ -1,6 +1,6 @@
 <?php
-class Inventario
-{
+class Inventario{ //no le hago modelo porque no lo utilizo para otra cosa
+    
     // Agregar producto al inventario
     public static function agregarProducto($clienteId, $productoId, $cantidad)
     {

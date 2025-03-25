@@ -4,6 +4,7 @@ require_once('Clases' . DIRECTORY_SEPARATOR . 'ClienteManager.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'MascotaManager.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'VeterinarioManager.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'ProductoManager.php');
+require_once('Clases' . DIRECTORY_SEPARATOR . 'InventarioManager.php'); 
 
 class MenuAdmin extends Menu
 {
@@ -14,6 +15,7 @@ class MenuAdmin extends Menu
     private $clienteId;
     private $veterinarioId;
 
+
     public function __construct()
     {
         $this->clienteManager = new ClienteManager();
@@ -22,10 +24,13 @@ class MenuAdmin extends Menu
         $this->clienteId = null;
         $this->veterinarioId = null;
     }
-
+    
     // Menú principal para seleccionar el rol
     public function menuPrincipal()
     {
+        $this->clienteId = null;
+        $this->veterinarioId = null;
+
         $titulo = "Bienvenido a la Veterinaria 'Patitas'";
         $opciones = [];
 
@@ -89,7 +94,7 @@ class MenuAdmin extends Menu
             $opciones[4][0] = 4;
             $opciones[4][1] = "Mostrar inventario";
             $opciones[4][2] = function () use ($clienteSeleccionado) {
-                ClienteManager::mostrarInventario($clienteSeleccionado);
+                InventarioManager::mostrarInventario($clienteSeleccionado);
             };
 
             self::menu($titulo, $opciones);
@@ -117,7 +122,9 @@ class MenuAdmin extends Menu
 
         $opciones[3][0] = 3;
         $opciones[3][1] = "Modificar mascota";
-        $opciones[3][2] = array($mascotaManager, "modificar2");
+        $opciones[3][2] = function () use ($mascotaManager) { // Use un closure
+            $mascotaManager->modificar();
+        };
 
         self::menu($titulo, $opciones);
     }
@@ -137,12 +144,10 @@ class MenuAdmin extends Menu
 
         $opciones[2][0] = 2;
         $opciones[2][1] = "Comprar producto";
-        $opciones[2][2] = //array($this->productoManager, "comprarProducto");
-            function () {
-                // Obtener el cliente seleccionado
+        $opciones[2][2] =  function () {
                 $clienteSeleccionado = $this->clienteManager->getPorId($this->clienteId);
                 // Llamar a la función comprarProducto de ClienteManager
-                $this->clienteManager->comprarProducto($clienteSeleccionado, $this->productoManager);
+                InventarioManager::comprarProducto($clienteSeleccionado, $this->productoManager);
             };
 
         self::menu($titulo, $opciones);
@@ -166,7 +171,6 @@ class MenuAdmin extends Menu
 
             // Obtener el veterinario correspondiente
             $veterinarioSeleccionado =     $this->veterinarioManager->getPorId($id);
-            $clienteManager = new ClienteManager($veterinarioSeleccionado);
 
             $titulo = "Menu administrativo de veterinario para: " . htmlspecialchars($veterinarioSeleccionado->getNombre());
 
@@ -195,6 +199,9 @@ class MenuAdmin extends Menu
 
     protected function menuAdministrarClientes()
     {
+        $veterinarioSeleccionado = $this->veterinarioManager->getPorId($this->veterinarioId);
+        $clienteManager = new ClienteManager($veterinarioSeleccionado);
+
         // Menú para administrar clientes
         $titulo = "Menu administrativo de Clientes";
 
@@ -207,19 +214,19 @@ class MenuAdmin extends Menu
 
         $opciones[1][0] = 1;
         $opciones[1][1] = "Agregar cliente";
-        $opciones[1][2] = array($this->clienteManager, "alta");
+        $opciones[1][2] = array($clienteManager, "alta");
 
         $opciones[2][0] = 2;
         $opciones[2][1] = "Eliminar cliente";
-        $opciones[2][2] = array($this->clienteManager, "baja");
+        $opciones[2][2] = array($clienteManager, "baja");
 
         $opciones[3][0] = 3;
         $opciones[3][1] = "Modificar cliente";
-        $opciones[3][2] = array($this->clienteManager, "modificarCliente");
+        $opciones[3][2] = array($clienteManager, "modificar");
 
         $opciones[4][0] = 4;
         $opciones[4][1] = "Mostrar todos los clientes";
-        $opciones[4][2] = array($this->clienteManager, "mostrar");
+        $opciones[4][2] = array($clienteManager, "mostrar");
 
         self::menu($titulo, $opciones);
     }
@@ -265,7 +272,9 @@ class MenuAdmin extends Menu
 
         $opciones[3][0] = 3;
         $opciones[3][1] = "Modificar mascota";
-        $opciones[3][2] = array($mascotaManager, "modificarVet");
+        $opciones[3][2] = function () use ($mascotaManager) { // Use un closure y pase true, se ejecuta solo cuando se elige
+            $mascotaManager->modificar(true);
+        };
 
         $opciones[4][0] = 4;
         $opciones[4][1] = "Mostrar todas las mascotas";
@@ -297,7 +306,7 @@ class MenuAdmin extends Menu
 
         $opciones[3][0] = 3;
         $opciones[3][1] = "Actualizar producto";
-        $opciones[3][2] = array($this->productoManager, "modificarProducto");
+        $opciones[3][2] = array($this->productoManager, "modificar");
 
         $opciones[4][0] = 4;
         $opciones[4][1] = "Mostrar todos los productos";

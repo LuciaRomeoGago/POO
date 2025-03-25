@@ -7,9 +7,9 @@ class Conexion
     {
         // Configuración de la conexión a la base de datos MySQL
         $servername = "sql10.freesqldatabase.com";
-        $database = "sql10768330";
-        $username = "sql10768330";
-        $password = "1bFDBkBLRb";
+        $database = "sql10769541";
+        $username = "sql10769541";
+        $password = "FNFK8M2iYq";
 
         try {
             // Crear una instancia de PDO para conexión a MySQL

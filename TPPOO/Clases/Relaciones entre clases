@@ -1,27 +1,46 @@
-Cliente "1" -- "*" Mascota : referenciaAnimal
-Cliente "1" -- "1" Conexion : usa
-Cliente "1" -- "*" Inventario : usa
-Producto "1" -- "1" Conexion : usa
-Inventario -- Conexion : usa
-ClienteManager -- Cliente : maneja
-ClienteManager -- Conexion : usa
-VeterinarioManager -- Veterinario : maneja
-VeterinarioManager -- Conexion : usa
-MascotaManager -- Mascota : maneja
-MascotaManager -- Conexion : usa
-Veterinario "1" -- "1" Conexion : usa
-ArrayIdManager <|-- ClienteManager 
+Cliente "1" -- "*" Mascota: tiene multiples mediante referenciaAnimal
+Cliente "1" -- "1" Inventario: usa
+Inventario "1" -- "*" Producto: contiene
+
+ClienteManager -- Cliente: maneja
+VeterinarioManager -- Veterinario: maneja
+MascotaManager -- Mascota: maneja
+ProductoManager -- Producto: maneja
+InventarioManager -- Inventario : maneja
+
+ArrayIdManager <|-- ClienteManager
 ArrayIdManager <|-- VeterinarioManager
 ArrayIdManager <|-- MascotaManager
+ArrayIdManager <|-- ProductoManager
+
 ABMinterface <|-- ClienteManager
 ABMinterface <|-- VeterinarioManager
 ABMinterface <|-- MascotaManager
-MenuAdmin -- ClienteManager : usa
-MenuAdmin -- VeterinarioManager : usa
-MenuAdmin -- MascotaManager : usa
+ABMinterface <|-- ProductoManager
 
-note top of Cliente::referenciaAnimal : Array of Mascota objects
-note top of Cliente::inventario : Array of mixed type
+(Menu interactua con gestores)
+MenuAdmin -- ClienteManager: usa
+MenuAdmin -- VeterinarioManager: usa
+MenuAdmin -- MascotaManager: usa
+MenuAdmin -- ProductoManager: usa
 
-// ClienteManager, VeterinarioManager y MascotaManager son casos especificos de ArrayIdManager, esta es la base, mas general.
-// ClienteManager, VeterinarioManager y MascotaManager implemetan ABMinterface, se comprometen a proporcionar metodos de esta.
+ClienteManager, VeterinarioManager, MascotaManager, y ProductoManager son casos específicos (heredan funcionalidad) de ArrayIdManager, que es la base más general.
+Estas clases también implementan ABMinterface, comprometiéndose a proporcionar métodos de esta interfaz.
+
+Observaciones
+Las relaciones entre Cliente, Producto, Veterinario y Conexion son indirectas porque son los modelos (ClienteModelo, ProductoModelo, VeterinarioModelo) los que interactúan con la base de datos a través de Conexion.
+
+Dependencias de Modelos (BD):
+ClienteManager --> ClienteModelo         (Dependencia: Usa el modelo para operaciones CRUD)
+MascotaManager --> MascotaModelo
+ProductoManager --> ProductoModelo
+VeterinarioManager --> VeterinarioModelo
+
+InventarioManager --> Inventario         (Dependencia: Usa métodos estáticos de Inventario)
+
+Entonces:
+ClienteModelo --> Conexion               (Todos los modelos dependen de Conexión para acceder a la BD)
+MascotaModelo --> Conexion
+ProductoModelo --> Conexion
+VeterinarioModelo --> Conexion
+InventarioManager --> Conexion 
