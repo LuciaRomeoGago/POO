@@ -12,7 +12,7 @@ class Cliente
         $this->nombre = $nombre;
         $this->dni = $dni;
         $this->id = $id;
-        $this->referenciaAnimal = []; //array, almacena las mascotas asociadas al cliente
+        $this->referenciaAnimal = []; 
     }
 
     // Getters, permiten acceder a las propiedades privadas de la clase sin que sus valores se modifiquen directamente
@@ -59,7 +59,7 @@ class Cliente
     }
 
     public function setMascotas($mascotas)
-    { //establece las mascotas asociadas al cliente si es necesario
+    { 
         $this->referenciaAnimal = $mascotas;
     }
 
@@ -68,14 +68,14 @@ class Cliente
         $this->inventario = $inventario;
     }
 
-   ///////////////// // Agregar una mascota, establece el id de cliente, y permite agregar una instancia de mascota a este
+    // Agregar una Mascota a referenciaAnimal
     public function agregarMascota(Mascota $mascota)
     {
         $mascota->setClienteId($this->getId());
         $this->referenciaAnimal[] = $mascota;
     }
 
-    // uso internoMostrar todas las mascotas del cliente, verifica si hay mascotas y las imprime con el metodo mostrar() de c/mascota
+    //Mostrar todas las mascotas del Cliente
     public function mostrarMascotas()
     {
         if (empty($this->referenciaAnimal)) {
@@ -90,7 +90,7 @@ class Cliente
         }
     }
 
-    //Muestra por pantalla un cliente y llama para mostrar sus mascotas
+    //Muestra por pantalla  Cliente y sus mascotas
     public function mostrar()
     {
         echo "Id: " . $this->getId()

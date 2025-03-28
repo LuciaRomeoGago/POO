@@ -2,48 +2,86 @@
 require_once('Clases' . DIRECTORY_SEPARATOR . 'Cliente.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'Producto.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'ProductoModelo.php');
+require_once('Lib' . DIRECTORY_SEPARATOR . 'ABMinterface.php');
 
-class InventarioManager
-{
-    // Agregar producto al inventario
-    public static function agregarAlInventario(Cliente $cliente, $productoId, $cantidad)
-    {
-        if (Inventario::agregarProducto($cliente->getId(), $productoId, $cantidad)) {
-            $cliente->setInventario(Inventario::obtenerInventario($cliente->getId()));
-            return true;
+class InventarioManager extends ArrayIdManager implements ABMinterface {
+    private $cliente;
+
+    public function __construct(Cliente $cliente) {
+        $this->cliente = $cliente;
+        $this->levantar();
+    }
+
+    public function levantar() {
+        $inventarioDatos = InventarioModelo::getPorClienteId($this->cliente->getId());
+
+        foreach ($inventarioDatos as $item) {
+            $producto = ProductoModelo::buscarPorId($item['productoId']);
+            if ($producto) {
+                $inventarioItem = new Inventario($producto, $item['cantidad']);
+                parent::agregar($inventarioItem);
+            }
         }
-        return false;
+    }
+
+    // Agrega Producto al inventario
+    public function alta()
+    {
+        echo "Ingrese el ID del producto a agregar al inventario: ";
+        $productoId = trim(fgets(STDIN));
+
+        echo "Ingrese la cantidad a agregar: ";
+        $cantidad = (int)trim(fgets(STDIN));
+
+        if (InventarioModelo::guardar($this->cliente->getId(), $productoId, $cantidad)) {
+            $producto = ProductoModelo::buscarPorId($productoId);
+            if ($producto) {
+                $inventarioItem = new Inventario($producto, $cantidad);
+                parent::agregar($inventarioItem);
+            }
+            echo "El producto se ha agregado al inventario con éxito." . PHP_EOL;
+        } else {
+            echo "Error al agregar el producto al inventario." . PHP_EOL;
+        }
     }
 
     // Eliminar producto del inventario
-    public static function eliminarDelInventario(Cliente $cliente, $productoId)
+    public function baja()
     {
-        if (Inventario::eliminarProducto($cliente->getId(), $productoId)) {
-            $cliente->setInventario(Inventario::obtenerInventario($cliente->getId()));
-            return true;
+        $this->mostrar();
+
+        echo "Ingrese el ID del producto a eliminar del inventario: ";
+        $productoId = trim(fgets(STDIN));
+
+        if (InventarioModelo::borrar($this->cliente->getId(), $productoId)) {
+
+            parent::eliminarPorId($productoId);
+            echo "El producto se ha eliminado del inventario con éxito." . PHP_EOL;
+        } else {
+            echo "Error al eliminar el producto del inventario." . PHP_EOL;
         }
-        return false;
     }
 
     // Mostrar Inventario
-    public static function mostrarInventario(Cliente $cliente)
+    public function mostrar()
     {
-        $inventario = $cliente->getInventario();
+        echo "Inventario de " . $this->cliente->getNombre() . ":" . PHP_EOL;
 
-        if (empty($inventario)) {
+        if (empty($this->getArreglo())) {
             echo "El cliente no tiene productos en su inventario." . PHP_EOL;
             return;
         }
-
-        echo "Inventario de " . $cliente->getNombre() . ":" . PHP_EOL;
-        foreach ($inventario as $item) {
-            $producto = ProductoModelo::buscarPorId($item['productoId']);
-            if ($producto) {
-                echo "- " . $producto->getNombre()
-                    . " (Cantidad: " . $item['cantidad'] . ")"
-                    . PHP_EOL;
-            }
+        foreach ($this->getArreglo() as $inventarioItem) {
+            echo "- " . $inventarioItem->getProducto()->getNombre()
+                . " (Cantidad: " . $inventarioItem->getCantidad() . ")"
+                . PHP_EOL;
         }
+    }
+
+    public static function mostrarInventario(Cliente $cliente)
+    {
+        $inventarioManager = new self($cliente);
+        $inventarioManager->mostrar();
     }
 
     // Comprar Producto
@@ -59,7 +97,6 @@ class InventarioManager
             return;
         }
 
-        // Solicitar cantidad a comprar
         echo "Ingrese la cantidad que desea comprar: ";
         $cantidadCompra = (int)trim(fgets(STDIN));
 
@@ -75,17 +112,12 @@ class InventarioManager
             return;
         }
 
-        // Restar stock al producto y actualizar en la base de datos
         if ($productoManager->comprar($idProducto, $cantidadCompra)) {
             echo PHP_EOL . "Compra realizada con éxito. " . PHP_EOL;
 
-            // Recargar el producto desde la base de datos para obtener el stock actualizado
             $producto = ProductoModelo::buscarPorId($idProducto);
 
-            // Agregar el producto al inventario del cliente
-            if (InventarioManager::agregarAlInventario($cliente, $idProducto, $cantidadCompra)) {
-
-                // Mostrar el inventario actualizado
+            if (InventarioModelo::guardar($cliente->getId(), $idProducto, $cantidadCompra)) {
                 InventarioManager::mostrarInventario($cliente);
             } else {
                 echo PHP_EOL . "Error al agregar el producto al inventario." . PHP_EOL;

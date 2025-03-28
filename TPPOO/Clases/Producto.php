@@ -5,8 +5,7 @@ class Producto{
     private $precio;
     private $stock;
 
-    public function __construct($id, $nombre, $precio, $stock)
-    {
+    public function __construct($id, $nombre, $precio, $stock) {
         $this->id = $id;
         $this->nombre = $nombre;
         $this->precio = $precio;
@@ -14,55 +13,45 @@ class Producto{
     }
 
     // Getters, permiten acceder a las propiedades privadas de la clase sin que sus valores se modifiquen directamente
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
-    public function getNombre()
-    {
+    public function getNombre() {
         return $this->nombre;
     }
 
-    public function getPrecio()
-    {
+    public function getPrecio() {
         return $this->precio;
     }
 
-    public function getStock()
-    {
+    public function getStock() {
         return $this->stock;
     }
 
     //Setters, permiten modificar las propiedades, algunas retornan $this para permitir encadenar llamadas
-    public function setId($id)
-    {
+    public function setId($id){
         $this->id = $id;
     }
 
-    public function setNombre($nombre)
-    {
+    public function setNombre($nombre) {
         $this->nombre = $nombre;
     }
 
-    public function setPrecio($precio)
-    {
+    public function setPrecio($precio){
         $this->precio = $precio;
     }
 
-    public function setStock($stock)
-    {
+    public function setStock($stock) {
         $this->stock = $stock;
     }
 
-      //Muestra por pantalla producto
-      public function mostrar()
-      {
-          echo "Id: " . $this->getId()
-              . ", Nombre: " . $this->getNombre()
-              . ", Precio: " . $this->getPrecio()
-              . ", Stock: " . $this->getStock()
-              . PHP_EOL;
-      }
-  
+    //Muestra el Producto
+    public function mostrar() {
+        echo "Id: " . $this->getId()
+            . ", Nombre: " . $this->getNombre()
+            . ", Precio: " . $this->getPrecio()
+            . ", Stock: " . $this->getStock()
+            . PHP_EOL;
     }
+}

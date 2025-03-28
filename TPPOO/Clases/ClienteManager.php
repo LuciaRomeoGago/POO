@@ -1,26 +1,27 @@
 <?php
 require_once('Clases' . DIRECTORY_SEPARATOR . 'Cliente.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'ClienteModelo.php');
-require_once('Clases' . DIRECTORY_SEPARATOR . 'MascotaModelo.php');
-require_once('Clases' . DIRECTORY_SEPARATOR . 'Inventario.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'Mascota.php');
-require_once('Clases' . DIRECTORY_SEPARATOR . 'MascotaManager.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'MascotaModelo.php');
+require_once('Clases' . DIRECTORY_SEPARATOR . 'MascotaManager.php');
+require_once('Clases' . DIRECTORY_SEPARATOR . 'Inventario.php');
+require_once('Clases' . DIRECTORY_SEPARATOR . 'InventarioModelo.php');
+require_once('Clases' . DIRECTORY_SEPARATOR . 'InventarioManager.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'Producto.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'ProductoModelo.php');
 require_once('Lib' . DIRECTORY_SEPARATOR . 'arrayIdManager.php');
-require_once('Lib' . DIRECTORY_SEPARATOR . 'interface.php');
+require_once('Lib' . DIRECTORY_SEPARATOR . 'ABMinterface.php');
 require_once('Menu' . DIRECTORY_SEPARATOR . 'Menu.php');
 
 
-class ClienteManager extends arrayIdManager
+class ClienteManager extends arrayIdManager implements ABMinterface
 {
     public function __construct()
     {
         $this->levantar(); //llama al metodo levantar para cargar clientes desde db al crear una isntancia de clientemanager
     }
 
-    //De la base de datos levanta los clientes y los agrega al arreglo para manipularlos (lee datos de clientes desde db y crear objetos clientes con esos datos)
+    // Levanta los clientes y los agrega al arreglo para manipularlos
     public function levantar()
     {
         try {
@@ -42,13 +43,11 @@ class ClienteManager extends arrayIdManager
                     $clienteData['id']
                 );
 
-                $cliente->setMascotas(MascotaModelo::getMascotasPorClienteId($cliente->getId()));
+                $cliente->setMascotas(MascotaModelo::getPorClienteId($cliente->getId()));
 
                 // Cargar el inventario del cliente
-                $inventario = Inventario::obtenerInventario($cliente->getId());
-                $cliente->setInventario($inventario);
-
-                // Agregar al arreglo gestionado por ArrayIdManager
+                $inventario = new InventarioManager($cliente);
+                $cliente->setInventario($inventario->getArreglo());
                 $this->agregar($cliente);
             }
         } catch (PDOException $e) {
@@ -56,11 +55,19 @@ class ClienteManager extends arrayIdManager
         }
     }
 
-    // Crear cliente
+    // Crea un Cliente
     public function alta()
     {
         $nombre = Menu::readln("Ingrese el nombre y apellido del cliente: ");
+        if (!preg_match('/^[a-zA-Z\s]+$/', $nombre)) {
+            echo "Error: El nombre debe contener solo letras." . PHP_EOL;
+            return;
+        }
         $dni = Menu::readln("Ingrese el dni del cliente: ");
+        if (!preg_match('/^[0-9]+$/', $dni) || strlen($dni) != 8) {
+            echo "Error: El DNI debe ser numérico y tener 8 dígitos." . PHP_EOL;
+           return;
+        }
 
         $modelo = new ClienteModelo();
         if ($modelo->existeDni($dni)) {
@@ -70,10 +77,8 @@ class ClienteManager extends arrayIdManager
 
         $cliente = new Cliente($nombre, $dni);
         if ($modelo->guardar($cliente)) {
-            //Lo agrega al arreglo
             $this->agregar($cliente);
 
-            // Preguntar si desea agregar una mascota
             if (strtolower(Menu::readln("¿Desea agregar una mascota? (si/no): ")) === 'si') {
                 $mascotaManager = new MascotaManager($cliente);
                 $mascotaManager->alta();
@@ -84,9 +89,8 @@ class ClienteManager extends arrayIdManager
         }
     }
 
-    // Eliminar cliente
-    public function baja()
-    {
+    // Elimina un Cliente
+    public function baja() {
         $this->mostrar();
         $id = Menu::readln("Ingrese el id cliente a eliminar:");
 
@@ -108,16 +112,15 @@ class ClienteManager extends arrayIdManager
         }
     }
 
-// Mostrar Clientes en pantalla
-    public function mostrar()
-    {
+// Mostra los Clientes 
+    public function mostrar() {
         $this->levantar();
 
         $clientes = $this->getArreglo();
         Menu::cls();
         Menu::subtitulo('Lista de los clientes existentes en nuestro sistema');
 
-        $lineas = 0; // para controlar la cantidad de clientes mostrados por pantalla y hace pausa c/cierta cant de lineas
+        $lineas = 0; // Controla cant de Cliente que se muestran, hace pausa c/cierta cant de lineas
         foreach ($clientes as $cliente) {
             $cliente->mostrar();
             Menu::writeln("");
@@ -131,9 +134,8 @@ class ClienteManager extends arrayIdManager
         Menu::waitForEnter();
     }
 
-    // Modificar Cliente
-    public function modificar($elementoModificado = null)
-    {
+    // Modifica un Cliente
+    public function modificar($elementoModificado = null) {
         $this->mostrar();
         $idOriginal = Menu::readln("Ingrese Id de cliente a modificar: ");
 
@@ -149,11 +151,19 @@ class ClienteManager extends arrayIdManager
 
                 $nombre = Menu::readln("Ingrese el nombre y apellido: ");
                 if ($nombre != "") {
+                    if (!preg_match('/^[a-zA-Z\s]+$/', $nombre)) {
+                        echo "Error: El nombre debe contener solo letras." . PHP_EOL;
+                        return;
+                    }        
                     $clienteModificado->setNombre($nombre);
                     $campos['nombre'] = $nombre;
                 }
                 $dni = Menu::readln("Ingrese el dni: ");
                 if ($dni != "") {
+                    if (!preg_match('/^[0-9]+$/', $dni) || strlen($dni) != 8) {
+                        echo "Error: El DNI debe ser numérico y tener 8 dígitos." . PHP_EOL;
+                       return;
+                    }
                     $clienteModificado->setDni($dni);
                     $campos['dni'] = $dni;
                 }
@@ -166,7 +176,6 @@ class ClienteManager extends arrayIdManager
                 $modelo = new ClienteModelo();
                 if ($modelo->modificar($clienteModificado, $campos)) {
                     Menu::writeln("El cliente fue modificado con éxito");
-                    // Actualizar el cliente en el arrayIdManager
                     parent::modificar($clienteModificado);
                 } else {
                     Menu::writeln("No se pudo modificar el cliente.");

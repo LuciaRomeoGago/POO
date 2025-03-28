@@ -1,56 +1,26 @@
 <?php
-class Inventario{ //no le hago modelo porque no lo utilizo para otra cosa
-    
-    // Agregar producto al inventario
-    public static function agregarProducto($clienteId, $productoId, $cantidad)
-    {
-        try {
-            $sql = "INSERT INTO Inventario (clienteId, productoId, cantidad) 
-                    VALUES (:clienteId, :productoId, :cantidad)
-                    ON DUPLICATE KEY UPDATE cantidad = cantidad + :cantidad";
+class Inventario{
+    private $producto;
+    private $cantidad;
 
-            $stmt = Conexion::prepare($sql);
-            $stmt->bindParam(':clienteId', $clienteId);
-            $stmt->bindParam(':productoId', $productoId);
-            $stmt->bindParam(':cantidad', $cantidad);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error al agregar producto al inventario: " . $e->getMessage());
-            return false;
-        }
+    public function __construct(Producto $producto, $cantidad) {
+        $this->producto = $producto;
+        $this->cantidad = $cantidad;
     }
 
-    // Eliminar producto del inventario
-    public static function eliminarProducto($clienteId, $productoId)
-    {
-        $sql = "DELETE FROM Inventario 
-                WHERE clienteId = :clienteId AND productoId = :productoId";
-        $stmt = Conexion::prepare($sql);
-        $stmt->bindParam(':clienteId', $clienteId);
-        $stmt->bindParam(':productoId', $productoId);
-        return $stmt->execute();
+    public function getProducto(){
+        return $this->producto;
     }
 
-    // Obtener inventario del cliente
-    public static function obtenerInventario($clienteId)
-    {
-        try {
-            $sql = "SELECT productoId, cantidad 
-                FROM Inventario 
-                WHERE clienteId = :clienteId";
-            $stmt = Conexion::prepare($sql);
-            $stmt->bindParam(':clienteId', $clienteId);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public function getCantidad() {
+        return $this->cantidad;
+    }
 
-            echo "Inventario para cliente " . htmlspecialchars($clienteId) . ": ";
-            var_dump($inventario);
-            echo PHP_EOL;
+    public function getId(){
+        return $this->producto->getId();
+    }
 
-            return $inventario;
-        } catch (PDOException $e) {
-            error_log("Error al obtener inventario: " . $e->getMessage());
-            return [];
-        }
+    public function setCantidad($cantidad) {
+        $this->cantidad = $cantidad;
     }
 }

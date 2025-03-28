@@ -12,35 +12,39 @@ ArrayIdManager <|-- ClienteManager
 ArrayIdManager <|-- VeterinarioManager
 ArrayIdManager <|-- MascotaManager
 ArrayIdManager <|-- ProductoManager
+ArrayIdManager <|-- InventarioManager
 
 ABMinterface <|-- ClienteManager
 ABMinterface <|-- VeterinarioManager
 ABMinterface <|-- MascotaManager
 ABMinterface <|-- ProductoManager
+ABMinterface <|-- InventarioManager
+
+Menu <|-- MenuAdmin 
 
 (Menu interactua con gestores)
 MenuAdmin -- ClienteManager: usa
 MenuAdmin -- VeterinarioManager: usa
 MenuAdmin -- MascotaManager: usa
 MenuAdmin -- ProductoManager: usa
+MenuAdmin -- InventarioManager: usa
 
-ClienteManager, VeterinarioManager, MascotaManager, y ProductoManager son casos específicos (heredan funcionalidad) de ArrayIdManager, que es la base más general.
+ClienteManager, VeterinarioManager, MascotaManager, InventarioManager y ProductoManager son casos específicos (heredan funcionalidad) de ArrayIdManager, que es la base más general.
 Estas clases también implementan ABMinterface, comprometiéndose a proporcionar métodos de esta interfaz.
 
 Observaciones
-Las relaciones entre Cliente, Producto, Veterinario y Conexion son indirectas porque son los modelos (ClienteModelo, ProductoModelo, VeterinarioModelo) los que interactúan con la base de datos a través de Conexion.
+Las relaciones entre Cliente, Producto, Inventario, Veterinario y Conexion son indirectas porque son los modelos (ClienteModelo, ProductoModelo, VeterinarioModelo, MascotaModelo e InventarioModelo) los que interactúan con la base de datos a través de Conexion.
 
 Dependencias de Modelos (BD):
 ClienteManager --> ClienteModelo         (Dependencia: Usa el modelo para operaciones CRUD)
 MascotaManager --> MascotaModelo
 ProductoManager --> ProductoModelo
 VeterinarioManager --> VeterinarioModelo
-
-InventarioManager --> Inventario         (Dependencia: Usa métodos estáticos de Inventario)
+InventarioManager --> InventarioModelo       
 
 Entonces:
 ClienteModelo --> Conexion               (Todos los modelos dependen de Conexión para acceder a la BD)
 MascotaModelo --> Conexion
 ProductoModelo --> Conexion
 VeterinarioModelo --> Conexion
-InventarioManager --> Conexion 
+InventarioModelo --> Conexion 

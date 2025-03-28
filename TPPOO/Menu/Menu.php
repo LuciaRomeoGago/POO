@@ -3,25 +3,22 @@ require_once('MenuAdministrador.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'Cliente.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'Mascota.php');
 require_once('Lib' . DIRECTORY_SEPARATOR . 'arrayIdManager.php');
-require_once('Lib' . DIRECTORY_SEPARATOR . 'interface.php');
+require_once('Lib' . DIRECTORY_SEPARATOR . 'ABMinterface.php');
 
-class Menu
-{
+class Menu {
     protected $salir = false;
     private static $lineasPorPagina = 10;
 
     public function __construct() {}
 
-    // Función que muestra una línea en pantalla con el salto de línea
-    public static function writeln($texto)
-    {
+    // Muestra una línea en pantalla con el salto de línea
+    public static function writeln($texto) {
         echo ($texto);
         echo (PHP_EOL);
     }
 
-    // Función que muestra una línea en pantalla con el salto de línea
-    public static function readln($texto)
-    {
+    // Muestra una línea en pantalla con el salto de línea
+    public static function readln($texto) {
         echo ($texto);
         $rta = readline();
         echo (PHP_EOL);
@@ -34,7 +31,7 @@ class Menu
         return self::$lineasPorPagina;
     }
 
-    // Función para esperar a que el usuario presione Enter   
+    // Espera a que el usuario presione Enter   
     public static function waitForEnter()
     {
         echo "Presiona Enter para continuar...";
@@ -42,8 +39,7 @@ class Menu
     }
 
     // Limpia la pantalla dependiendo del sistema operativo que estemos usando 
-    public static function cls()
-    {
+    public static function cls() {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             popen('cls', 'w');
         } else {
@@ -51,8 +47,8 @@ class Menu
         }
     }
 
-    public function pantallaBienvenida($nombreSistema)
-    {
+    // Muestra la pantalla de Bienvenida
+    public function pantallaBienvenida($nombreSistema) {
         self::writeln("**************************************");
         self::writeln("**                                 **");
         self::writeln("**   Bienvenidos a " . $nombreSistema . "      **");
@@ -61,32 +57,28 @@ class Menu
         self::writeln("");
     }
 
-    public function pantallaDespedida()
-    {
+    // Muestra la pantalla de Despedida
+    public function pantallaDespedida() {
         self::writeln("Gracias por utilizar nuestro sistema");
         self::writeln("");
     }
 
-    public static function subtitulo($subtitulo)
-    {
+    public static function subtitulo($subtitulo){
         echo PHP_EOL;
         self::writeln($subtitulo);
         self::writeln(str_repeat('-', mb_strlen($subtitulo)));
     }
 
-    protected function exit()
-    {
-        $this->salir = true;
-    }
-
-    public function getSalir()
-    {
+    public function getSalir(){
         return $this->salir;
     }
 
+    protected function exit(){
+        $this->salir = true;
+    }
+
     // Opciones es una matriz, en cada fila el array opción tiene el número de la opción, nombre de la opción y la función
-    protected function menu($titulo, $opciones)
-    {
+    protected function menu($titulo, $opciones) {
         $opcion = 1;
 
         while ($opcion != 0) {
@@ -119,11 +111,10 @@ class Menu
         }
     }
 
-    // Método para iniciar el sistema
-    public function iniciarSistema()
-    {
+    // Inicia el sistema
+    public function iniciarSistema() {
         $this->pantallaBienvenida("Sistema de Gestión Veterinaria 'Patitas'");
         $menuAdmin = new MenuAdmin();
-        $menuAdmin->menuPrincipal(); // Inicia el menú principal del administrador
+        $menuAdmin->menuPrincipal();
     }
 }

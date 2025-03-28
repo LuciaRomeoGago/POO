@@ -1,28 +1,25 @@
 <?php
 require_once('Clases' . DIRECTORY_SEPARATOR . 'Mascota.php');
 require_once('Lib' . DIRECTORY_SEPARATOR . 'arrayIdManager.php');
-require_once('Lib' . DIRECTORY_SEPARATOR . 'interface.php');
+require_once('Lib' . DIRECTORY_SEPARATOR . 'ABMinterface.php');
 
-class MascotaManager extends arrayIdManager
-{ //la clase puede manejar un arreglo de objetos
+class MascotaManager extends arrayIdManager implements ABMinterface
+{ 
     private $cliente;
 
-    public function __construct(Cliente $cliente)
-    {
+    public function __construct(Cliente $cliente){
         $this->cliente = $cliente;
         $this->levantar();
     }
 
-    public function setCliente(Cliente $cliente)
-    {
+    public function setCliente(Cliente $cliente){
         $this->cliente = $cliente;
     }
 
-    // Levanta(para obtener) las mascotas del cliente desde la base de datos
-    public function levantar()
-    {
+    // Levanta Mascotas del Cliente
+    public function levantar(){
         try {
-            $mascotas = MascotaModelo::getMascotasPorClienteId($this->cliente->getId());
+            $mascotas = MascotaModelo::getPorClienteId($this->cliente->getId());
 
             foreach ($mascotas as $mascota) {
                 $this->agregar($mascota);
@@ -33,8 +30,7 @@ class MascotaManager extends arrayIdManager
     }
 
     // Agregar Mascota
-    public function alta()
-    {
+    public function alta() {
         $nombreMascota = Menu::readln("Ingrese el nombre de la mascota: ");
         $edad = Menu::readln("Ingrese la edad de la mascota: ");
         $raza = Menu::readln("Ingrese la raza de la mascota: ");
@@ -66,7 +62,6 @@ class MascotaManager extends arrayIdManager
             return false;
         }
 
-        // Verificar si ya existe una mascota con el mismo nombre para este cliente
         foreach ($this->cliente->getReferenciaAnimal() as $mascota) {
             if ($mascota->getNombre() === $nombreMascota) {
                 echo "Ya existe una mascota con ese nombre para este cliente." . PHP_EOL;
@@ -74,7 +69,6 @@ class MascotaManager extends arrayIdManager
             }
         }
 
-        // Crear y guardar la nueva mascota
         $mascota = new Mascota($nombreMascota, $edad, $raza, $historialMedico);
         $mascota->setClienteId($this->cliente->getId());
 
@@ -89,9 +83,8 @@ class MascotaManager extends arrayIdManager
         }
     }
 
-    // Método para eliminar una mascota
-    public function baja()
-    {
+    // Elimina una Mascota
+    public function baja() {
         $mascotas = $this->getArreglo();
         if (empty($mascotas)) {
             echo "Este cliente no tiene mascotas para eliminar, intente de nuevo." . PHP_EOL;
@@ -108,12 +101,11 @@ class MascotaManager extends arrayIdManager
         Menu::waitForEnter();
         $id = Menu::readln("Ingrese el ID de la mascota a eliminar: ");
 
-        // Verificar si existe la mascota
         if ($this->existeId($id)) {
             $mascota = $this->getPorId($id);
             if ($mascota === null) {
                 echo "No se encontró ninguna mascota con ese ID." . PHP_EOL;
-                return; // Salir si no se encuentra la mascota
+                return; 
             }
 
             Menu::writeln('Está por eliminar la siguiente mascota: ' . PHP_EOL);
@@ -138,8 +130,7 @@ class MascotaManager extends arrayIdManager
     }
 
     // Mostrar Mascotas
-    public function mostrar()
-    {
+    public function mostrar() {
         $this->levantar();
         $mascotas = $this->getArreglo(); 
         if (empty($mascotas)) {
@@ -156,16 +147,14 @@ class MascotaManager extends arrayIdManager
         Menu::waitForEnter(); 
     }
 
-    public function modificar($esVeterinario = false)
-    {
+    public function modificar($esVeterinario = false) {
         $mascotas = $this->getArreglo(); 
         if (empty($mascotas)) {
             echo "Este cliente no tiene mascotas para modificar, intente de nuevo." . PHP_EOL;
-            return; // Salir si no hay mascotas
+            return; 
         }
 
         $this->mostrar();
-
         while (true) {
             $idMascota = Menu::readln("Ingrese ID de la mascota a modificar: ");
 
@@ -188,24 +177,42 @@ class MascotaManager extends arrayIdManager
                 Menu::writeln('Está por modificar la siguiente mascota del sistema: ' . PHP_EOL);
                 $mascotaEncontrada->mostrar();
                 if ((Menu::readln(PHP_EOL . '¿Está seguro? S/N: ')) === 'S') {
+                 
                     $nombre = trim(Menu::readln("Ingrese el nuevo nombre de la mascota (deje en blanco para no modificar): "));
+                    while ($nombre != "" && !preg_match('/^[a-zA-Z\s]+$/', $nombre)) {
+                        echo "Error: El nombre debe contener solo letras y espacios." . PHP_EOL;
+                        $nombre = trim(Menu::readln("Ingrese el nuevo nombre de la mascota: "));
+                    }
                     if ($nombre != "") {
                         $mascotaEncontrada->setNombre($nombre);
                     }
-
+            
                     $edad = trim(Menu::readln("Ingrese la nueva edad de la mascota (deje en blanco para no modificar): "));
-                    if ($edad != "" && is_numeric($edad)) {
-                        $mascotaEncontrada->setEdad((int)$edad); // número entero tiene que ser
+                    while ($edad != "" && (!is_numeric($edad) || $edad <= 0)) {
+                        echo "Error: La edad debe ser un número positivo." . PHP_EOL;
+                        $edad = trim(Menu::readln("Ingrese la nueva edad de la mascota: "));
+                    }
+                    if ($edad != "") {
+                        $mascotaEncontrada->setEdad((int)$edad);
                     }
 
                     $raza = trim(Menu::readln("Ingrese la nueva raza de la mascota (deje en blanco para no modificar): "));
-                    if ($raza != "") {
+                    while ($raza != "" && preg_match('/^[a-zA-Z\s]+$/', $raza)) {
+                        echo "Error: La raza debe contener solo letras y espacios. ".PHP_EOL;
+                        $raza = trim(Menu::readln("Ingrese la nueva raza de la mascota (deje en blanco para no modificar): "));
+                    } 
+                     if ($raza != ""){
                         $mascotaEncontrada->setRaza($raza);
                     }
 
-                    if ($esVeterinario) { // Modificar el historial médico
+                    if ($esVeterinario) {
                         $historialMedico = trim(Menu::readln("Ingrese el nuevo historial médico de la mascota (deje en blanco para no modificar): "));
-                        if ($historialMedico != "") {
+                        while ($historialMedico != "" && preg_match('/^[a-zA-Z\s]+$/', $historialMedico)) {
+                            echo "Error: El historial medico debe contener solo letras y espacios. ".PHP_EOL;
+                            $mascotaEncontrada->setHistorialMedico($historialMedico);
+                            $historialMedico = trim(Menu::readln("Ingrese el nuevo historial médico de la mascota (deje en blanco para no modificar): "));
+                        }
+                        if ($historialMedico != ""){
                             $mascotaEncontrada->setHistorialMedico($historialMedico);
                         }
                     }

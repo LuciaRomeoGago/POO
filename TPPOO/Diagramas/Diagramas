@@ -22,7 +22,7 @@ class Cliente {
     + mostrar(): void
 }
 
-class ClienteManager extends ArrayIdManager {
+class ClienteManager extends ArrayIdManager implements ABMinterface{
     + __construct()
     + levantar(): void
     + alta(): void
@@ -41,17 +41,36 @@ class ClienteModelo {
 }
 
 class Inventario {
-    + agregarProducto(clienteId: int, productoId: int, cantidad: int): bool
-    + eliminarProducto(clienteId: int, productoId: int): bool
-    + obtenerInventario(clienteId: int): array
+    - producto: Producto
+    - cantidad: int
+
+    + __construct(Producto $producto, $cantidad)
+    + getProducto(): Producto
+    + getCantidad(): int
+    + getId(): int
+    + setCantidad($cantidad): void
 }
 
-class InventarioManager {
-    + agregarAlInventario(cliente: Cliente, productoId: int, cantidad: int): bool
-    + eliminarDelInventario(cliente: Cliente, productoId: int): bool
-    + mostrarInventario(cliente: Cliente): void
-    + comprarProducto(cliente: Cliente, productoManager: ProductoManager): void
+class InventarioModelo {
+    + static guardar($clienteId, $productoId, $cantidad): bool
+    + static borrar($clienteId, $productoId): bool
+    + static modificar($clienteId, $productoId, $nuevaCantidad)
+    + static obtenerInventario($clienteId): array
+    + static getPorClienteId($clienteId): array
 }
+
+class InventarioManager extends ArrayIdManager implements ABMinterface{
+    - cliente: Cliente
+
+    + __construct(Cliente $cliente)
+    + levantar(): void
+    + alta (): bool
+    + baja(): bool
+    + mostrar(): void
+    + static mostrarInventario(Cliente $cliente): void
+    + static comprarProducto(Cliente $cliente, ProductoManager $productoManager): void
+}
+
 
 class Mascota {
     - nombre: string
@@ -77,7 +96,7 @@ class Mascota {
     + mostrar(): void
 }
 
-class MascotaManager extends ArrayIdManager {
+class MascotaManager extends ArrayIdManager implements ABMinterface{
     - cliente: Cliente
 
     + __construct(cliente: Cliente)
@@ -93,43 +112,44 @@ class MascotaModelo {
     + guardar(mascota: Mascota): bool
     + modificar(mascota: Mascota): bool
     + borrar(mascota: Mascota): bool
-    + getMascotasPorClienteId(id: int): array
+    + getPorClienteId($clienteId): array
     + actualizarMascota(mascota: Mascota): void
 }
 
 class Producto {
     - id: int
     - nombre: string
-    - precio: float
+    - precio: int
     - stock: int
 
-    + __construct(id: int, nombre: string, precio: float, stock: int)
+    + __construct(id: int, nombre: string, precio: int, stock: int)
     + getId(): int
     + getNombre(): string
-    + getPrecio(): float
+    + getPrecio(): int
     + getStock(): int
     + setId(id: int): void
     + setNombre(nombre: string): void
-    + setPrecio(precio: float): void
+    + setPrecio(precio: int): void
     + setStock(stock: int): void
     + mostrar(): void
 }
 
-class ProductoManager extends ArrayIdManager {
+class ProductoManager extends ArrayIdManager implements ABMinterface{
     + __construct()
     + levantar(): void
     + mostrar(): void
     + alta(): bool
     + baja(): void
     + modificar(elementoModificado = null): void
+    + comprar ($idProducto, $cantidadCompra): bool
 }
 
 class ProductoModelo {
     + guardar(producto: Producto): bool
-    + obtenerTodos(): array
+    + static obtenerTodos(): array
     + borrar(producto: Producto): bool
     + modificar(producto: Producto): bool
-    + buscarPorId(id: int): Producto|null
+    + static buscarPorId(id: int): Producto|null
     + hayStockDisponible(producto: Producto, cantidadCompra: int): bool
     + restarStock(producto: Producto, cantidadCompra: int): bool
 }
@@ -149,7 +169,7 @@ class Veterinario {
     + mostrar(): void
 }
 
-class VeterinarioManager extends ArrayIdManager {
+class VeterinarioManager extends ArrayIdManager implements ABMinterface {
     + __construct()
     + levantar(): void
     + alta(): bool
@@ -162,10 +182,10 @@ class VeterinarioManager extends ArrayIdManager {
 
 class VeterinarioModelo {
     + guardar(veterinario: Veterinario): bool
-    + obtenerTodos(): array
+    + static obtenerTodos(): array
     + borrar(veterinario: Veterinario): bool
     + modificar(veterinario: Veterinario, campos: array): bool
-    + buscarPorId(veterinarioId: int): Veterinario|null
+    + static buscarPorId(veterinarioId: int): Veterinario|null
 }
 
 class Conexion {
@@ -218,9 +238,22 @@ class Menu {
     + iniciarSistema(): void
 }
 
-class MenuAdmin {
-    +menuPrincipal(): void
-    +subMenuClientes(clienteManager: ClienteManager): void
-    +subMenuVeterinarios(veterinarioManager: VeterinarioManager): void
+  class MenuAdmin {
+   -clienteManager: ClienteManager
+   -veterinarioManager: VeterinarioManager
+   -productoManager: ProductoManager
+   -clienteId: null 
+   -veterinarioId:null 
+
+    + __construct()
+    + menuPrincipal(): void
+    + menuCliente(): void
+    + menuGestionMascotas (MascotaManager $mascotaManager) : void
+    + menuCompraProductos (): void
+    + menuVeterinario(): void
+    + menuAdministrarClientes(): void
+    + menuAdministrarMascotas(): void
+    + menuAdministrarProductos(): void
+    # salirSistema(): void
 }
  */

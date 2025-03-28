@@ -3,13 +3,13 @@ class Veterinario
 {
     private $nombre;
     private $especialidad;
-    private $id; // Se usa  después de guardar
+    private $id;
 
     public function __construct($nombre, $especialidad, $id = null)
     {
         $this->nombre = $nombre;
         $this->especialidad = $especialidad;
-        $this->id = $id; // O se asigna si se proporciona
+        $this->id = $id;
     }
 
     // Getters
@@ -44,8 +44,7 @@ class Veterinario
         $this->id = $id;
     }
 
-
-    // Método para mostrar información del veterinario
+    // Muestra un Veterinario
     public function mostrar()
     {
         echo "ID: " . htmlspecialchars($this->getId())

@@ -4,13 +4,9 @@ include_once('Clases' . DIRECTORY_SEPARATOR . 'ProductoManager.php');
 
 class ProductoModelo
 {
-    // CRUD
-
-    // Guarda en la base de datos
-    public function guardar(Producto $producto)
-    {
+    // Crea un Producto
+    public function guardar(Producto $producto) {
         try {
-            //prepara y ejecuta consulta para insertar el cliente
             $sql = "INSERT INTO Producto (id, nombre, precio, stock)
                         VALUES (:id, :nombre, :precio, :stock)";
 
@@ -32,11 +28,10 @@ class ProductoModelo
         } catch (PDOException $e) {
             echo "Error al guardar el producto: " . htmlspecialchars($e->getMessage());
         }
-        return false;
     }
 
-    public static function obtenerTodos()
-    {
+    // Muestra todos los Productos
+    public static function obtenerTodos() {
         try {
             $sql = "SELECT * FROM Producto";
             $stmt = Conexion::prepare($sql);
@@ -50,13 +45,10 @@ class ProductoModelo
         }
     }
 
-    // Borra el producto de la base de datos
-    public function borrar(Producto $producto)
-    {
+    // Borra un Producto
+    public function borrar(Producto $producto) {
         try {
-            //prepara la consulta SQL
             $sql = "DELETE FROM Producto WHERE id = :id";
-            //prepara la declaracion
             $stmt = Conexion::prepare($sql);
             $id= $producto->getId();
             $stmt->bindParam(':id', $id);
@@ -73,14 +65,11 @@ class ProductoModelo
 
 
     // Modifica al producto en la base de datos
-    public function modificar(Producto $producto)
-    {
+    public function modificar(Producto $producto) {
         try {
-            //prepara la consulta SQL
-            $sql = "UPDATE Producto SET nombre = :nombre, precio = :precio, stock = :stock
-                        WHERE id = :id";
-
-            // Prepara la declaración
+            $sql = "UPDATE Producto 
+                    SET nombre = :nombre, precio = :precio, stock = :stock
+                    WHERE id = :id";
             $stmt = Conexion::prepare($sql);
 
             $id = $producto->getId();
@@ -104,8 +93,8 @@ class ProductoModelo
         return false;
     }
 
-    public static function buscarPorId($id)
-    {
+    // Busca un Producto por su Id
+    public static function buscarPorId($id) {
         try {
             $sql = "SELECT * FROM Producto WHERE id = :id";
             $stmt = Conexion::prepare($sql);
@@ -114,7 +103,6 @@ class ProductoModelo
             $fila = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($fila) {
-
                 return new Producto(
                     $fila['id'],
                     $fila['nombre'],
@@ -122,19 +110,20 @@ class ProductoModelo
                     $fila['stock']
                 );
             }
-            return null; // Si no se encuentra el producto
+            return null;
         } catch (PDOException $e) {
             error_log("Error al buscar producto: " . $e->getMessage());
             return null;
         }
     }
 
-
+    // Muestra el stock para la compra
     public function hayStockDisponible(Producto $producto, $cantidadCompra)
     {
         return $producto->getStock() >= $cantidadCompra;
     }
 
+    // Resta al stock la cantidad de compra, y muestra
     public function restarStock(Producto $producto, $cantidadCompra)
     {
         if ($this->hayStockDisponible($producto, $cantidadCompra)) {

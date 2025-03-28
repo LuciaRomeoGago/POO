@@ -1,34 +1,31 @@
 <?php
 require_once('Clases' . DIRECTORY_SEPARATOR . 'Mascota.php');
-require_once ('Clases' . DIRECTORY_SEPARATOR . 'MascotaModelo.php');
+require_once('Clases' . DIRECTORY_SEPARATOR . 'MascotaModelo.php');
 
 class MascotaModelo {
-    // guarda la info de la mascota en la db
-    public function guardar(Mascota $mascota)
-    {
+
+    // Agrega una Mascota
+    public function guardar(Mascota $mascota) {
         try {
-            // Consulta SQL para insertar una nueva mascota
             $sql = "INSERT INTO Mascota (nombre, edad, raza, historialMedico, clienteId) 
                     VALUES (:nombre, :edad, :raza, :historialMedico, :clienteId)";
-            $stmt = Conexion::prepare($sql); 
+            $stmt = Conexion::prepare($sql);
 
             $nombre = $mascota->getNombre();
             $edad = $mascota->getEdad();
             $raza = $mascota->getRaza();
-            $historialMedico= $mascota->getHistorialMedico();
-            $clienteId= $mascota->getClienteId();
+            $historialMedico = $mascota->getHistorialMedico();
+            $clienteId = $mascota->getClienteId();
 
-            // Vincular los parámetros
             $stmt->bindParam(':nombre', $nombre);
             $stmt->bindParam(':edad', $edad);
             $stmt->bindParam(':raza', $raza);
             $stmt->bindParam(':historialMedico', $historialMedico);
             $stmt->bindParam(':clienteId', $clienteId);
 
-            // Ejecutar la consulta
             if ($stmt->execute()) {
                 $id = Conexion::getLastId();
-                $mascota->setId($id); // Asigna el ID al objeto Mascota
+                $mascota->setId($id);
                 return true;
             } else {
                 return false;
@@ -39,9 +36,8 @@ class MascotaModelo {
         }
     }
 
-    // (U)pdate
-    public function modificar(Mascota $mascota)
-    {
+    // Modifica una Mascota
+    public function modificar(Mascota $mascota) {
         try {
             $sql = "UPDATE Mascota SET ";
             $params = [];
@@ -87,13 +83,12 @@ class MascotaModelo {
         }
     }
 
-    // Borra el mascota de la base de datos
-    public function borrar(Mascota $mascota)
-    {
+    // Borra una Mascota
+    public function borrar(Mascota $mascota){
         try {
             $sql = "DELETE FROM Mascota WHERE id = :id";
             $stmt = Conexion::prepare($sql);
-            $id= $mascota->getId();
+            $id = $mascota->getId();
             $stmt->bindParam(':id', $id);
 
             if ($stmt->execute()) {
@@ -107,42 +102,38 @@ class MascotaModelo {
         return false;
     }
 
-        //Para obtener las mascotas asociadas a un cliente especifico
-        public static function getMascotasPorClienteId($clienteId)
-        {
-            try {
-                $pdo = Conexion::getConexion();
-    
-                // Preparar la consulta
-                $stmt = $pdo->prepare("SELECT id, nombre, edad, raza, historialMedico 
-                                               FROM Mascota 
-                                               WHERE clienteId = :clienteId");
-                $stmt->execute([':clienteId' => $clienteId]);
-    
-                // Obtener todas las mascotas
-                $mascotasData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-                $mascotas = [];
-                // Crear objetos de tipo Mascota a partir de los resultados
-                foreach ($mascotasData as $mascotaData) {
-                    $mascota = new Mascota(
-                        $mascotaData['nombre'],
-                        $mascotaData['edad'],
-                        $mascotaData['raza'],
-                        $mascotaData['historialMedico'],
-                        $mascotaData['id']
-                    );
-                    $mascota->setId($mascotaData['id']);
-                    $mascotas[] = $mascota;
-                }
-                return $mascotas;
-            } catch (PDOException $e) {
-                error_log("Error en getMascotasByClienteId: " . $e->getMessage());
-                return []; 
-            }
-        }
+    // Obtiene Mascota especifica de un Cliente
+    public static function getPorClienteId($clienteId)
+    {
+        try {   $pdo = Conexion::getConexion();
 
-        // Método para actualizar una mascota específica desde la base de datos
+            $stmt = $pdo->prepare("SELECT id, nombre, edad, raza, historialMedico 
+                                        FROM Mascota 
+                                        WHERE clienteId = :clienteId");
+            $stmt->execute([':clienteId' => $clienteId]);
+
+            $mascotasData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $mascotas = [];
+            foreach ($mascotasData as $mascotaData) {
+                $mascota = new Mascota(
+                    $mascotaData['nombre'],
+                    $mascotaData['edad'],
+                    $mascotaData['raza'],
+                    $mascotaData['historialMedico'],
+                    $mascotaData['id']
+                );
+                $mascota->setId($mascotaData['id']);
+                $mascotas[] = $mascota;
+            }
+            return $mascotas;
+        } catch (PDOException $e) {
+            error_log("Error en getMascotasByClienteId: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // Actualiza una mascota específica
     public static function actualizarMascota(Mascota $mascota)
     {
         try {

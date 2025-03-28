@@ -6,15 +6,12 @@ require_once('Clases' . DIRECTORY_SEPARATOR . 'VeterinarioManager.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'ProductoManager.php');
 require_once('Clases' . DIRECTORY_SEPARATOR . 'InventarioManager.php'); 
 
-class MenuAdmin extends Menu
-{
-
+class MenuAdmin extends Menu {
     private $clienteManager;
     private $veterinarioManager;
     private $productoManager;
     private $clienteId;
     private $veterinarioId;
-
 
     public function __construct()
     {
@@ -25,7 +22,7 @@ class MenuAdmin extends Menu
         $this->veterinarioId = null;
     }
     
-    // Menú principal para seleccionar el rol
+    // Menú principal general
     public function menuPrincipal()
     {
         $this->clienteId = null;
@@ -53,7 +50,6 @@ class MenuAdmin extends Menu
     protected function menuCliente()
     {
         if ($this->clienteId === null) {
-
             echo "Ingrese su ID: ";
             $id = trim(fgets(STDIN));
 
@@ -61,15 +57,10 @@ class MenuAdmin extends Menu
                 echo "Cliente no encontrado." . PHP_EOL;
                 return;
             }
-
-            // guardo id del cliente en la propiedad
             $this->clienteId = $id;
-
-            // Obtener el cliente correspondiente
             $clienteSeleccionado = $this->clienteManager->getPorId($id);
             $mascotaManager = new MascotaManager($clienteSeleccionado);
 
-            // Menú principal del cliente
             $titulo = "Bienvenido, " . htmlspecialchars($clienteSeleccionado->getNombre());
             $opciones = [];
 
@@ -102,9 +93,7 @@ class MenuAdmin extends Menu
     }
 
     // Submenú para gestionar mascotas
-    protected function menuGestionMascotas(MascotaManager $mascotaManager)
-    {
-
+    protected function menuGestionMascotas(MascotaManager $mascotaManager)   {
         $titulo = "Gestión de Mascotas";
         $opciones = [];
 
@@ -122,15 +111,15 @@ class MenuAdmin extends Menu
 
         $opciones[3][0] = 3;
         $opciones[3][1] = "Modificar mascota";
-        $opciones[3][2] = function () use ($mascotaManager) { // Use un closure
+        $opciones[3][2] = function () use ($mascotaManager) { 
             $mascotaManager->modificar();
         };
 
         self::menu($titulo, $opciones);
     }
 
-    protected function menuCompraProductos()
-    {
+    // Submenu para compra de Productos
+    protected function menuCompraProductos() {
         $titulo = "Gestión de Productos";
         $opciones = [];
 
@@ -146,18 +135,15 @@ class MenuAdmin extends Menu
         $opciones[2][1] = "Comprar producto";
         $opciones[2][2] =  function () {
                 $clienteSeleccionado = $this->clienteManager->getPorId($this->clienteId);
-                // Llamar a la función comprarProducto de ClienteManager
                 InventarioManager::comprarProducto($clienteSeleccionado, $this->productoManager);
             };
 
         self::menu($titulo, $opciones);
     }
 
-    // Menú para operaciones de veterinario
-    protected function menuVeterinario()
-    {
+    // Menú de operaciones del veterinario
+    protected function menuVeterinario() {
         if ($this->veterinarioId === null) {
-
             echo "Ingrese su ID: ";
             $id = trim(fgets(STDIN));
 
@@ -166,15 +152,10 @@ class MenuAdmin extends Menu
                 return;
             }
 
-            // guardo id del veterinario en la propiedad
             $this->veterinarioId = $id;
-
-            // Obtener el veterinario correspondiente
-            $veterinarioSeleccionado =     $this->veterinarioManager->getPorId($id);
+            $veterinarioSeleccionado = $this->veterinarioManager->getPorId($id);
 
             $titulo = "Menu administrativo de veterinario para: " . htmlspecialchars($veterinarioSeleccionado->getNombre());
-
-            // Opciones del menú
             $opciones = [];
 
             $opciones[0][0] = 0;
@@ -183,11 +164,11 @@ class MenuAdmin extends Menu
 
             $opciones[1][0] = 1;
             $opciones[1][1] = "Administrar Clientes";
-            $opciones[1][2] = array($this, 'menuAdministrarClientes'); // Mostrar todos los clientes
+            $opciones[1][2] = array($this, 'menuAdministrarClientes');
 
             $opciones[2][0] = 2;
             $opciones[2][1] = "Administrar Mascotas";
-            $opciones[2][2] = array($this, 'menuAdministrarMascotas'); // Método para gestionar mascotas
+            $opciones[2][2] = array($this, 'menuAdministrarMascotas'); 
 
             $opciones[3][0] = 3;
             $opciones[3][1] = "Administrar Productos";
@@ -197,15 +178,13 @@ class MenuAdmin extends Menu
         }
     }
 
-    protected function menuAdministrarClientes()
-    {
+    // Menu administrativo Clientes
+    protected function menuAdministrarClientes(){
         $veterinarioSeleccionado = $this->veterinarioManager->getPorId($this->veterinarioId);
         $clienteManager = new ClienteManager($veterinarioSeleccionado);
 
-        // Menú para administrar clientes
-        $titulo = "Menu administrativo de Clientes";
 
-        // Opciones del menú
+        $titulo = "Menu administrativo de Clientes";
         $opciones = [];
 
         $opciones[0][0] = 0;
@@ -232,30 +211,22 @@ class MenuAdmin extends Menu
     }
 
 
-    // Menú para administrar mascotas (por veterinarios)
-    protected function menuAdministrarMascotas()
-    {
-        // Mostrar la lista de clientes
+    // Menú administrativo mascotas
+    protected function menuAdministrarMascotas(){
         echo "Lista de clientes:" . PHP_EOL;
         $this->clienteManager->mostrar();
 
-        // Solicitar ID del cliente
         echo "Ingrese el ID del cliente para gestionar sus mascotas: ";
         $clienteId = trim(fgets(STDIN));
-
         if (!$this->clienteManager->existeId($clienteId)) {
             echo "Cliente no encontrado." . PHP_EOL;
             return;
         }
 
-        // Obtener el cliente correspondiente
         $clienteSeleccionado = $this->clienteManager->getPorId($clienteId);
         $mascotaManager = new MascotaManager($clienteSeleccionado);
         
-        // Menú de operaciones con mascotas
         $titulo = "Menu veterinario administrativo de Mascotas de: " . htmlspecialchars($clienteSeleccionado->getNombre());
-
-        // Opciones del menú
         $opciones = [];
 
         $opciones[0][0] = 0;
@@ -272,7 +243,7 @@ class MenuAdmin extends Menu
 
         $opciones[3][0] = 3;
         $opciones[3][1] = "Modificar mascota";
-        $opciones[3][2] = function () use ($mascotaManager) { // Use un closure y pase true, se ejecuta solo cuando se elige
+        $opciones[3][2] = function () use ($mascotaManager) { 
             $mascotaManager->modificar(true);
         };
 
@@ -283,13 +254,9 @@ class MenuAdmin extends Menu
         self::menu($titulo, $opciones);
     }
 
-
-    protected function menuAdministrarProductos()
-    {
-        // Menú para administrar clientes
+    // Menu administrativo de Productos
+    protected function menuAdministrarProductos() {
         $titulo = "Menu administrativo de Productos";
-
-        // Opciones del menú
         $opciones = [];
 
         $opciones[0][0] = 0;
@@ -315,14 +282,7 @@ class MenuAdmin extends Menu
         self::menu($titulo, $opciones);
     }
 
-    // Método público para mostrar el menú
-    public function mostrarMenu($titulo, $opciones)
-    {
-        $this->menu($titulo, $opciones); // Llama al método protegido
-    }
-
-    protected function salirSistema()
-    {
+    protected function salirSistema() {
         parent::exit();
     }
 }

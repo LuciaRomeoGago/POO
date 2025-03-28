@@ -75,12 +75,12 @@ class Mascota
         $this->historialMedico = $historialMedico;
     }
 
-    //establece el id del cliente al que pertenece la mascota
     public function setClienteId($clienteId)
     {
         $this->clienteId = $clienteId;
     }
 
+    // Muestra la Mascota
     public function mostrar()
     {
         MascotaModelo::actualizarMascota($this);

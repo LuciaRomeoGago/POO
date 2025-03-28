@@ -7,5 +7,5 @@ interface ABMinterface {
     //Da de baja un elemento en la base de datos y en la estructura
     public function baja();
     //Modifica un elemento en la base de datos y en la estructura
-    public function modificacion();
+    public function modificar($elementoModificado);
 }

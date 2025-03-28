@@ -1,24 +1,22 @@
 <?php
 class Conexion
 {
-    private static $db = null; // Almacena instancia de conexión a la DB, inicialmente no hay conexión
+    private static $db = null; // Almacena la unica instancia de conexión a la DB, inicialmente no hay conexión
 
     private function __construct()
     {
         // Configuración de la conexión a la base de datos MySQL
-        $servername = "sql10.freesqldatabase.com";
-        $database = "sql10769541";
-        $username = "sql10769541";
-        $password = "FNFK8M2iYq";
+        $servername = "localhost";
+        $database = "sistemadegestionvet";
+        $username = "root";
+        $password = "Hipatia2023!";
 
         try {
             // Crear una instancia de PDO para conexión a MySQL
-            $dsn = "mysql:host=$servername;dbname=$database"; // Cadena de conexión para MySQL
+            $dsn = "mysql:host=$servername;dbname=$database"; 
             self::$db = new PDO($dsn, $username, $password);
-            self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Configuración para manejar errores
-            //echo "Conexión exitosa con PDO a MySQL";
+            self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
         } catch (PDOException $e) {
-            // Manejo de errores de conexión
             echo 'Error de conexión: ' . $e->getMessage();
         }
     }
@@ -27,7 +25,7 @@ class Conexion
     static function getConexion()
     {
         if (self::$db === null) {
-            new self(); // Si no hay conexión, crea una nueva instancia
+            new self(); 
         }
         return self::$db;
     }
@@ -36,7 +34,7 @@ class Conexion
     static function query($sql)
     {
         try {
-            $statement = self::getConexion()->query($sql); // Ejecuta la consulta
+            $statement = self::getConexion()->query($sql); 
             if ($statement === false) {
                 throw new PDOException("Error al ejecutar la consulta: " . self::getConexion()->errorInfo()[2]);
             }
@@ -51,7 +49,7 @@ class Conexion
     static function ejecutar($sql)
     {
         try {
-            self::getConexion()->exec($sql); // Ejecuta la consulta
+            self::getConexion()->exec($sql); 
             return true;
         } catch (PDOException $e) {
             echo "Error: datos ingresados inválidos " . htmlspecialchars($e->getMessage());
@@ -74,6 +72,6 @@ class Conexion
     // Cierra la conexión con la base de datos
     static function closeConexion()
     {
-        self::$db = null; // Al poner la conexión como null, se cierra la conexión
+        self::$db = null; 
     }
 }

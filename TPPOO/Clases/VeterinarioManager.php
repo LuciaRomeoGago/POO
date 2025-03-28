@@ -2,20 +2,17 @@
 require_once('clases' . DIRECTORY_SEPARATOR . 'Veterinario.php');
 require_once('clases' . DIRECTORY_SEPARATOR . 'VeterinarioModelo.php');
 require_once('clases' . DIRECTORY_SEPARATOR . 'Cliente.php');
-require_once('Lib' . DIRECTORY_SEPARATOR . 'interface.php');
+require_once('Lib' . DIRECTORY_SEPARATOR . 'ABMinterface.php');
 
 // no utilizo esta clase en este sistema todavia, podria utilizarlo si agrandara el sistema 
 //utilizando un perfil de secretaria que me agregue los vetes al sistema y asocio a turnos 
 
-class VeterinarioManager extends ArrayIdManager
-{
-	public function __construct()
-	{
+class VeterinarioManager extends ArrayIdManager implements ABMinterface {
+	public function __construct(){
 		$this->levantar();
 	}
 
-	public function levantar()
-	{
+	public function levantar(){
 		try {
 			$veterinarios = VeterinarioModelo::obtenerTodos();
 	
@@ -27,22 +24,17 @@ class VeterinarioManager extends ArrayIdManager
 		}
 	}
 
-
-	// permite ingresar detalles de un nuevo veterinario
-	public function alta()
-	{
+	// Crea un Veterinario
+	public function alta(){
 		echo "Ingrese nombre del veterinario: ";
 		$nombre = trim(fgets(STDIN));
-
 		echo "Ingrese especialidad del veterinario: ";
 		$especialidad = trim(fgets(STDIN));
-
-		// Crear nuevo objeto Veterinario
 		$veterinario = new Veterinario($nombre, $especialidad);
 
 		$modelo = new VeterinarioModelo();
 
-		if ($modelo->guardar($veterinario)) {  // Guardar en base de datos
+		if ($modelo->guardar($veterinario)) {  
 			$this->agregar($veterinario);
 			echo "Veterinario agregado con éxito." . PHP_EOL;
 			return true;
@@ -52,11 +44,8 @@ class VeterinarioManager extends ArrayIdManager
 		}
 	}
 
-
-
-	// elimina un veterinario existente
-	public function baja()
-	{
+	// Elimina un Veterinario
+	public function baja(){
 		echo "Ingrese ID del veterinario a eliminar: ";
 		$id = trim(fgets(STDIN));
 
@@ -67,17 +56,14 @@ class VeterinarioManager extends ArrayIdManager
 				echo "No se encontró ningún veterinario con ese ID." . PHP_EOL;
 				return;
 			}
-
-			// Mostrar información antes de eliminar
 			$veterinario->mostrar();
 
-			// Confirmar eliminación
 			echo '¿Está seguro que desea eliminar este veterinario? (S/N): ';
 			$rta = trim(fgets(STDIN));
 
 			if (strtolower($rta) === 's') {
-				if ($veterinario->borrar()) {  // Llamar al método borrar()
-					$this->eliminarPorId($id);  // Eliminar del arreglo
+				if ($veterinario->borrar()) {  
+					$this->eliminarPorId($id);  
 					echo "Veterinario eliminado con éxito." . PHP_EOL;
 				} else {
 					echo "Error al intentar eliminar el veterinario." . PHP_EOL;
@@ -90,22 +76,18 @@ class VeterinarioManager extends ArrayIdManager
 		}
 	}
 
-	// modifica detalles de un veterinario
-	public function modificar($elementoModificado)
-	{
+	// Modifica un Veterinario
+	public function modificar($elementoModificado){
 		echo "Ingrese ID del veterinario a modificar: ";
 		$id = trim(fgets(STDIN));
 
 		if ($this->existeId($id)) {
-
 			$veterinarioModificado = 	$this->getPorId($id);
-
 			if ($veterinarioModificado === null) {
 				echo "No se encontró ningún veterinario con ese ID." . PHP_EOL;
 				return;
 			}
 
-			// Mostrar información actual del veterinario antes de modificar
 			echo 'Está por modificar al siguiente veterinario:' . PHP_EOL;
 			$veterinarioModificado->mostrar();
 
@@ -113,20 +95,19 @@ class VeterinarioManager extends ArrayIdManager
 			$rta = trim(fgets(STDIN));
 
 			if (strtolower($rta) === 's') {
-
 				echo "Ingrese nuevo nombre (deje en blanco para no modificar): ";
 				$nombre = trim(fgets(STDIN));
-				if ($nombre !== "") {  // Si no está vacío, actualizar nombre
+				if ($nombre !== "") {  
 					$veterinarioModificado->setNombre($nombre);
 				}
 
 				echo "Ingrese nueva especialidad (deje en blanco para no modificar): ";
 				$especialidad = trim(fgets(STDIN));
-				if ($especialidad !== "") {  // Si no está vacío, actualizar especialidad
+				if ($especialidad !== "") {  
 					$veterinarioModificado->setEspecialidad($especialidad);
 				}
 
-				if ($veterinarioModificado->modificar()) {  // Modificar en base de datos
+				if ($veterinarioModificado->modificar()) { 
 					echo "Veterinario modificado con éxito." . PHP_EOL;
 				} else {
 					echo "Error al modificar el veterinario." . PHP_EOL;
@@ -137,11 +118,11 @@ class VeterinarioManager extends ArrayIdManager
 		}
 	}
 
-
+	// Muestra Veterinarios
 	public function mostrar()
 	{
-		$veterinarios = $this->getArreglo(); // Obtener el arreglo de veterinarios
-		Menu::cls(); // Limpiar la pantalla
+		$veterinarios = $this->getArreglo(); 
+		Menu::cls(); 
 		Menu::subtitulo('Lista de Veterinarios');
 
 		if (empty($veterinarios)) {
@@ -150,13 +131,12 @@ class VeterinarioManager extends ArrayIdManager
 		}
 
 		foreach ($veterinarios as $veterinario) {
-			$veterinario->mostrar(); // Llamar al método mostrar de cada veterinario
+			$veterinario->mostrar(); 
 		}
-
-		Menu::waitForEnter(); // Esperar a que el usuario presione Enter
+		Menu::waitForEnter(); 
 	}
 
-	// agrega una nueva mascota a un cliente existente
+	// Agrega Mascota a un Cliente
 	public function altaMascota()
 	{
 		$clienteId = Menu::readln("Ingrese el Id del dueño de la mascota: ");
@@ -168,13 +148,11 @@ class VeterinarioManager extends ArrayIdManager
 			$raza = Menu::readln("Ingrese la raza de la mascota: ");
 			$historialMedico = Menu::readln("Ingrese el historial médico de la mascota: ");
 
-			// Crea el nuevo objeto Mascota
 			$mascota = new Mascota($nombreMascota, $edad, $raza, $historialMedico);
 			$mascota->setClienteId($cliente->getId());
 
 			$mascotaModelo = new MascotaModelo();
 			if ($mascotaModelo->guardar($mascota)) {
-				// Asocia la mascota al cliente
 				$cliente->agregarMascota($mascota);
 
 				echo "La mascota se ha agregado exitosamente al cliente con Id " . $clienteId . PHP_EOL;
@@ -184,25 +162,18 @@ class VeterinarioManager extends ArrayIdManager
 		}
 	}
 
-
-	// muestra mascotas asociadas a un cliente especifico
+	// Muestra Mascotas de un Cliente
 	public function mostrarMascota()
 	{
-		// Pedir al veterinario que ingrese el ID del cliente
 		$clienteId = Menu::readln("Ingrese el ID del cliente para mostrar sus mascotas: ");
-
 		$clienteModelo = new ClienteModelo();
-		// Buscar el cliente por ID
 		$cliente = $clienteModelo->buscarPorId($clienteId);
 
 		if ($cliente === null) {
 			echo "No se encontró un cliente con el ID ingresado." . PHP_EOL;
-			return; // Salir si no se encuentra el cliente
+			return; 
 		}
-
-		// Llamar directamente al método mostrarMascotas() del cliente
-		$cliente->mostrarMascotas(); // Este método ya imprime las mascotas o un mensaje si no hay ninguna
-
-		Menu::waitForEnter(); // Esperar a que el usuario presione Enter antes de continuar
+		$cliente->mostrarMascotas(); 
+		Menu::waitForEnter(); 
 	}
 }
