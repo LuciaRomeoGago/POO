@@ -52,11 +52,11 @@ class Inventario {
 }
 
 class InventarioModelo {
-    + static guardar($clienteId, $productoId, $cantidad): bool
-    + static borrar($clienteId, $productoId): bool
-    + static modificar($clienteId, $productoId, $nuevaCantidad)
-    + static obtenerInventario($clienteId): array
-    + static getPorClienteId($clienteId): array
+    = static guardar($clienteId, $productoId, $cantidad): bool
+    = static borrar($clienteId, $productoId): bool
+    = static modificar($clienteId, $productoId, $nuevaCantidad)
+    = static obtenerInventario($clienteId): array
+    = static getPorClienteId($clienteId): array
 }
 
 class InventarioManager extends ArrayIdManager implements ABMinterface{
@@ -67,8 +67,8 @@ class InventarioManager extends ArrayIdManager implements ABMinterface{
     + alta (): bool
     + baja(): bool
     + mostrar(): void
-    + static mostrarInventario(Cliente $cliente): void
-    + static comprarProducto(Cliente $cliente, ProductoManager $productoManager): void
+    = static mostrarInventario(Cliente $cliente): void
+    = static comprarProducto(Cliente $cliente, ProductoManager $productoManager): void
 }
 
 
@@ -146,10 +146,10 @@ class ProductoManager extends ArrayIdManager implements ABMinterface{
 
 class ProductoModelo {
     + guardar(producto: Producto): bool
-    + static obtenerTodos(): array
+    = static obtenerTodos(): array
     + borrar(producto: Producto): bool
     + modificar(producto: Producto): bool
-    + static buscarPorId(id: int): Producto|null
+    = static buscarPorId(id: int): Producto|null
     + hayStockDisponible(producto: Producto, cantidadCompra: int): bool
     + restarStock(producto: Producto, cantidadCompra: int): bool
 }
@@ -182,22 +182,22 @@ class VeterinarioManager extends ArrayIdManager implements ABMinterface {
 
 class VeterinarioModelo {
     + guardar(veterinario: Veterinario): bool
-    + static obtenerTodos(): array
+    = static obtenerTodos(): array
     + borrar(veterinario: Veterinario): bool
     + modificar(veterinario: Veterinario, campos: array): bool
-    + static buscarPorId(veterinarioId: int): Veterinario|null
+    = static buscarPorId(veterinarioId: int): Veterinario|null
 }
 
 class Conexion {
-    - static db: PDO|null
+    = static db: PDO|null
 
     - __construct()
-    + static getConexion(): PDO
-    + static query(sql: string): array
-    + static ejecutar(sql: string): bool
-    + static prepare(sql: string): PDOStatement
-    + static getLastId(): string
-    + static closeConexion(): void
+    = static getConexion(): PDO
+    = static query(sql: string): array
+    = static ejecutar(sql: string): bool
+    = static prepare(sql: string): PDOStatement
+    = static getLastId(): string
+    = static closeConexion(): void
 }
 
 abstract class ArrayIdManager {
@@ -209,29 +209,29 @@ abstract class ArrayIdManager {
     + eliminarPorId(id: int|string): void
     + getPorId(id: int|string): object|null
     + modificar(elementoModificado: object): void
-    + abstract mostrar(): void
+    * abstract mostrar(): void
 }
 
 interface ABMinterface {
-    +{abstract} levantar(): void
-    +{abstract} alta(): void
-    +{abstract} baja(): void
-    +{abstract} modificacion(): void
+    *{abstract} levantar(): void
+    *{abstract} alta(): void
+    *{abstract} baja(): void
+    *{abstract} modificacion(): void
 }
 
 class Menu {
     # salir: bool
-    - static lineasPorPagina: int
+    = static lineasPorPagina: int
 
     + __construct()
-    + static writeln(texto: string): void
-    + static readln(texto: string): string
-    + static lineasPorPagina(): int
-    + static waitForEnter(): void
-    + static cls(): void
+    = static writeln(texto: string): void
+    = static readln(texto: string): string
+    = static lineasPorPagina(): int
+    = static waitForEnter(): void
+    = static cls(): void
     + pantallaBienvenida(nombreSistema: string): void
     + pantallaDespedida(): void
-    + static subtitulo(subtitulo: string): void
+    = static subtitulo(subtitulo: string): void
     # exit(): void
     + getSalir(): bool
     # menu(titulo: string, opciones: array): void
