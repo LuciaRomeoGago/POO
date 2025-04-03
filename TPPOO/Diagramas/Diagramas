@@ -44,31 +44,31 @@ class Inventario {
     - producto: Producto
     - cantidad: int
 
-    + __construct(Producto $producto, $cantidad)
+    + __construct(Producto producto, cantidad)
     + getProducto(): Producto
     + getCantidad(): int
     + getId(): int
-    + setCantidad($cantidad): void
+    + setCantidad(cantidad): void
 }
 
 class InventarioModelo {
-    = static guardar($clienteId, $productoId, $cantidad): bool
-    = static borrar($clienteId, $productoId): bool
-    = static modificar($clienteId, $productoId, $nuevaCantidad)
-    = static obtenerInventario($clienteId): array
-    = static getPorClienteId($clienteId): array
+    = static guardar(clienteId, productoId, cantidad): bool
+    = static borrar(clienteId, productoId): bool
+    = static modificar(clienteId, productoId, nuevaCantidad)
+    = static obtenerInventario(clienteId): array
+    = static getPorClienteId(clienteId): array
 }
 
 class InventarioManager extends ArrayIdManager implements ABMinterface{
     - cliente: Cliente
 
-    + __construct(Cliente $cliente)
+    + __construct(Cliente cliente)
     + levantar(): void
     + alta (): bool
     + baja(): bool
     + mostrar(): void
-    = static mostrarInventario(Cliente $cliente): void
-    = static comprarProducto(Cliente $cliente, ProductoManager $productoManager): void
+    = static mostrarInventario(Cliente cliente): void
+    = static comprarProducto(Cliente cliente, ProductoManager productoManager): void
 }
 
 
@@ -112,7 +112,7 @@ class MascotaModelo {
     + guardar(mascota: Mascota): bool
     + modificar(mascota: Mascota): bool
     + borrar(mascota: Mascota): bool
-    + getPorClienteId($clienteId): array
+    + getPorClienteId(clienteId): array
     + actualizarMascota(mascota: Mascota): void
 }
 
@@ -141,7 +141,7 @@ class ProductoManager extends ArrayIdManager implements ABMinterface{
     + alta(): bool
     + baja(): void
     + modificar(elementoModificado = null): void
-    + comprar ($idProducto, $cantidadCompra): bool
+    + comprar (idProducto, cantidadCompra): bool
 }
 
 class ProductoModelo {
@@ -150,6 +150,7 @@ class ProductoModelo {
     + borrar(producto: Producto): bool
     + modificar(producto: Producto): bool
     = static buscarPorId(id: int): Producto|null
+    + existeId(id:int): bool
     + hayStockDisponible(producto: Producto, cantidadCompra: int): bool
     + restarStock(producto: Producto, cantidadCompra: int): bool
 }
@@ -248,7 +249,7 @@ class Menu {
     + __construct()
     + menuPrincipal(): void
     + menuCliente(): void
-    + menuGestionMascotas (MascotaManager $mascotaManager) : void
+    + menuGestionMascotas (MascotaManager mascotaManager) : void
     + menuCompraProductos (): void
     + menuVeterinario(): void
     + menuAdministrarClientes(): void

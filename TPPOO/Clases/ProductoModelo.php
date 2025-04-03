@@ -117,6 +117,26 @@ class ProductoModelo
         }
     }
 
+    // Busca el Id de un Producto
+    public function existeId($id)
+    {
+        try {
+            $sql = "SELECT * FROM Producto WHERE id = :id";
+            $stmt = Conexion::prepare($sql);
+            $stmt->bindParam(':id', $id);
+            $stmt->execute();
+
+            if ($stmt->fetchColumn() > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (PDOException $e) {
+            echo "Error al verificar Id: " . htmlspecialchars($e->getMessage());
+        }
+    }
+
+
     // Muestra el stock para la compra
     public function hayStockDisponible(Producto $producto, $cantidadCompra)
     {

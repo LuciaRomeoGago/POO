@@ -76,9 +76,15 @@ class ProductoManager extends arrayIdManager implements ABMinterface {
             echo "Error: los campos id, nombre, precio y stock son obligatorios" . PHP_EOL;
             return false;
         }
+        $productoModelo = new ProductoModelo();
+        if ($productoModelo->existeId($id)) {
+            echo "Error: Ya existe un producto con el ID ingresado. Por favor, ingrese otro ID." . PHP_EOL;
+            return false;
+        }
+
         $producto = new Producto($id, $nombre, $precio, $stock);
 
-        $productoModelo = new ProductoModelo();
+
         if ($productoModelo->guardar($producto)) {
             echo "Se ha creado el producto exitosamente." . PHP_EOL;
             return true;
