@@ -6,10 +6,10 @@ class Conexion
     private function __construct()
     {
         // Configuración de la conexión a la base de datos MySQL
-        $servername = "localhost";
-        $database = "sistemadegestionvet";
-        $username = "root";
-        $password = "Hipatia2023!";
+        $servername = ;
+        $database = ;
+        $username = ;
+        $password = ;
 
         try {
             // Crear una instancia de PDO para conexión a MySQL
